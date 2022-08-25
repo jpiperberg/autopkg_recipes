@@ -1,7 +1,7 @@
 Comment: |
   Downloads Mac DMG for RapidMinerStudio
   https://pages.rapidminer.com/latest-studio-mac-download.html
-Description: Downloads the latest version of Webex msi.
+Description: Downloads the latest version of the RapidMiner Studio DMG.
 Identifier: com.github.jpiperberg.download.RapidMinerStudio-Mac
 MinimumVersion: '2.3'
 Input:
@@ -13,6 +13,11 @@ Process:
           filename: '%NAME%.dmg'
           url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-osx.dmg'
     - Processor: EndOfCheckPhase
-    - Processor: DMGINfo
       Arguments:
-          dmg_path: '%pathname%'
+          input_path: '%pathname%/RapidMiner Studio.app'
+          requirement: 'identifier "com.rapidminer.studio" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "3GRYJJQEPU"'
+    - Processor: CodeSignatureVerifier
+      Arguments: 
+        input_plist_path: '%pathname%/RapidMiner Studio.app/Contents/Info.plist'
+        plist_version_key: 'CFBundleShortVersionString'
+    - Processor: Versioner
