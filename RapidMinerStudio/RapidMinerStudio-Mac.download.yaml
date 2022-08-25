@@ -6,7 +6,6 @@ Identifier: com.github.jpiperberg.download.RapidMinerStudio-Mac
 MinimumVersion: '2.3'
 Input:
   NAME: RapidMinerStudio
-
 Process:
     - Processor: URLDownloader
       Arguments:
