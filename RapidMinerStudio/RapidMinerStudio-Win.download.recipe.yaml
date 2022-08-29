@@ -5,11 +5,13 @@ Description: Downloads the latest version of the RapidMiner Studio exe.
 Identifier: com.github.jpiperberg.download.RapidMinerStudio-Win
 MinimumVersion: '2.3'
 Input:
-  NAME: RapidMinerStudio
+    NAME: RapidMinerStudio
 Process:
     - Processor: URLDownloader
       Arguments:
-          filename: '%NAME%.exe'
-          url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
+        filename: '%NAME%.exe'
+        url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
     - Processor: com.github.hansen-m.SharedProcessors/HachoirMetaDataProvider3
+      Arguments: 
+        file_path: '%pathname%'
     - Processor: EndOfCheckPhase
