@@ -1,6 +1,6 @@
 Comment: |
-  Downloads Mac DMG for RapidMinerStudio
-  https://pages.rapidminer.com/latest-studio-mac-download.html
+    Downloads Mac DMG for RapidMinerStudio
+    https://pages.rapidminer.com/latest-studio-mac-download.html
 Description: Downloads the latest version of the RapidMiner Studio DMG.
 Identifier: com.github.jpiperberg.download.RapidMinerStudio-Mac
 MinimumVersion: '2.3'
