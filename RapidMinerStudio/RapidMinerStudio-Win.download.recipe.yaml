@@ -1,0 +1,15 @@
+Comment: |
+    Downloads Win EXE for RapidMinerStudio
+    https://pages.rapidminer.com/latest-studio-win64bit-download.html
+Description: Downloads the latest version of the RapidMiner Studio exe.
+Identifier: com.github.jpiperberg.download.RapidMinerStudio-Win
+MinimumVersion: '2.3'
+Input:
+  NAME: RapidMinerStudio
+Process:
+    - Processor: URLDownloader
+      Arguments:
+          filename: '%NAME%.exe'
+          url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
+    - Processor: com.github.hansen-m.SharedProcessors/HachoirMetaDataProvider
+    - Processor: EndOfCheckPhase
