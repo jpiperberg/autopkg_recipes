@@ -3,9 +3,10 @@ Comment: |
     https://pages.rapidminer.com/latest-studio-win64bit-download.html
 Description: Downloads the latest version of the RapidMiner Studio exe.
 Identifier: com.github.jpiperberg.download.RapidMinerStudio-Win
+MinimumVersion: '2.3'
 Input:
     NAME: RapidMinerStudio
-    MinimumVersion: '2.3'
+    
 Process:
     - Processor: URLDownloader
       Arguments:
