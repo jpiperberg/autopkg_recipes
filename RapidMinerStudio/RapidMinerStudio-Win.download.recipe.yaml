@@ -11,5 +11,5 @@ Process:
       Arguments:
           filename: '%NAME%.exe'
           url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
-    - Processor: com.github.hansen-m.SharedProcessors/HachoirMetaDataProvider
+    - Processor: com.github.hansen-m.SharedProcessors/HachoirMetaDataProvider3
     - Processor: EndOfCheckPhase
