@@ -12,7 +12,7 @@
 		<string>RapidMinerStudio</string>
 	</dict>
 	<key>MinimumVersion</key>
-	<string>9.0</string>
+	<string>2.3</string>
 	<key>Process</key>
 	<array>
 		<dict>
