@@ -19,9 +19,9 @@
 			<key>Arguments</key>
 			<dict>
 				<key>curl_opts</key>
-				<dict>
+				<array>
 					<string>--remote-header-name</string>
-				</dict>
+				</array>
 				<key>url</key>
 				<string>https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe</string>
 			</dict>
