@@ -10,7 +10,7 @@ Input:
 Process:
     - Processor: URLDownloader
       Arguments:
-        curl_opts: '--remote-header-name'
+        curl_opts: "--remote-header-name"
         url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
     - Processor: EndOfCheckPhase
     - Processor: com.github.hansen-m.SharedProcessors/ExeVersionExtractor
