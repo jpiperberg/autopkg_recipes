@@ -10,6 +10,7 @@ Process:
     - Processor: URLDownloader
       Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-17-x64-windows-jdk.msi'
+        prefetch_filename: True
     - Processor: EndOfCheckPhase
     - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
