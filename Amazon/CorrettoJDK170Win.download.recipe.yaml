@@ -1,10 +1,10 @@
 Comment: |
-    Downloads Win MSI for CorettoJDK 17
+    Downloads Win MSI for CorrettoJDK 17
     https://corretto.aws/downloads/latest/amazon-corretto-17-x64-windows-jdk.msiDescription: Downloads the latest version of the RapidMiner Studio exe.
-Identifier: com.github.jpiperberg.download.CorettoJDK17-Win
+Identifier: com.github.jpiperberg.download.CorrettoJDK17-Win
 MinimumVersion: '2.3'
 Input:
-    NAME: CorettoJDK17-Win
+    NAME: CorrettoJDK17-Win
     versionRegEx: (?<=o-).+?(?=-)
 Process:
     - Processor: URLDownloader

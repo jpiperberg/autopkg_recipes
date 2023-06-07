@@ -1,17 +1,21 @@
 Comment: |
-    Downloads Win MSI for Coretto JRE8 32bit
+    Downloads Win MSI for Corretto JRE8 32bit
     https://corretto.aws/downloads/latest/amazon-corretto-8-x86-windows-jre.msi
-Description: Downloads the latest version of the Amazon Coretto JRE 8 for Windows 32 bit
-Identifier: com.github.jpiperberg.download.CorettoJRE8-32bit-Win
+Description: Downloads the latest version of the Amazon Corretto JRE 8 for Windows 32 bit
+Identifier: com.github.jpiperberg.download.CorrettoJRE8-32bit-Win
 MinimumVersion: '2.3'
 Input:
-    NAME: CorettoJRE8-32Bit-Win
+    NAME: CorrettoJRE8-32Bit-Win
     
 Process:
     - Processor: URLDownloader
       Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x86-windows-jre.msi'
+        prefetch_filename: True
     - Processor: EndOfCheckPhase
-    - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
-    Arguments:
-        msi_path: '%pathname%'
+    - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
+      Arguments:
+        input_string: '%pathname%'
+        re_pattern: '%versionRegEx'
+        result_output_var_name: version

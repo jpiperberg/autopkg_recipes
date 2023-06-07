@@ -1,17 +1,21 @@
 Comment: |
-    Downloads Win MSI for CorettoJRE8
+    Downloads Win MSI for CorrettoJRE8
     https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jre.msi
 Description: Downloads the latest version of the Amazon Coretto JRE 8 for Windows
-Identifier: com.github.jpiperberg.download.CorettoJRE8-Win
+Identifier: com.github.jpiperberg.download.CorrettoJRE8-Win
 MinimumVersion: '2.3'
 Input:
-    NAME: CorettoJRE8-Win
+    NAME: CorrettoJRE8-Win
     
 Process:
     - Processor: URLDownloader
       Arguments:
-        url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
+        url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jre.msi'
+        prefetch_filename: True
     - Processor: EndOfCheckPhase
-    - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+    - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
       Arguments:
-        msi_path: '%pathname%'
+        input_string: '%pathname%'
+        re_pattern: '%versionRegEx'
+        result_output_var_name: version
