@@ -16,5 +16,5 @@ Process:
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
       Arguments:
         input_string: '%pathname%'
-        re_pattern: '%versionRegEx'
+        re_pattern: '%versionRegEx%'
         result_output_var_name: version
