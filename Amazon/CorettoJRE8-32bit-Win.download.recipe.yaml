@@ -10,9 +10,8 @@ Input:
 Process:
     - Processor: URLDownloader
       Arguments:
-        curl_opts: "--remote-header-name"
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x86-windows-jre.msi'
     - Processor: EndOfCheckPhase
     - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
-        Arguments:
-            msi_path: '%pathname%'
+    Arguments:
+        msi_path: '%pathname%'

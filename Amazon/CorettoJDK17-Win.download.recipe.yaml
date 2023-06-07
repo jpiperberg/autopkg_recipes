@@ -5,13 +5,11 @@ Identifier: com.github.jpiperberg.download.CorettoJDK17-Win
 MinimumVersion: '2.3'
 Input:
     NAME: CorettoJDK17-Win
-    
 Process:
     - Processor: URLDownloader
       Arguments:
-        curl_opts: "--remote-header-name"
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-17-x64-windows-jdk.msi'
     - Processor: EndOfCheckPhase
     - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
-        Arguments:
-            msi_path: '%pathname%'
+      Arguments:
+        msi_path: '%pathname%'
