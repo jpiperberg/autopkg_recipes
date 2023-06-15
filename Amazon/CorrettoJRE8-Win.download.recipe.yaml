@@ -17,6 +17,8 @@ Process:
         prefetch_filename: True
     - Processor: EndOfCheckPhase
     - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+      Arguments: 
+        msi_path: '%pathname%'
     - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
       Arguments:
