@@ -6,16 +6,27 @@ Identifier: com.github.jpiperberg.download.CorrettoJRE8-32bit-Win
 MinimumVersion: '2.3'
 Input:
     NAME: CorrettoJRE8-32Bit-Win
-    
+    versionRegEx: (?<=\.)\d*$
+    # below regex gets the last part of a filepath without the folder delimiter
+    # regardless of platform (/ or \)
+    fileNameRegEx: (?:[^\\\/](?!(\\|\/)))+$
 Process:
     - Processor: URLDownloader
       Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x86-windows-jre.msi'
         prefetch_filename: True
     - Processor: EndOfCheckPhase
+    - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+      Arguments: 
+        msi_path: '%pathname%'
     - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
       Arguments:
-        input_string: '%pathname%'
+        input_string: '%version%'
         re_pattern: '%versionRegEx%'
-        result_output_var_name: version
+        result_output_var_name: buildVersion
+    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
+      Arguments:
+        input_string: '%pathname%'
+        re_pattern: '%fileNameRegEx%'
+        result_output_var_name: filename
