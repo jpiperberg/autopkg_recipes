@@ -2,7 +2,7 @@ Comment: |
     Downloads the latest version of Apache NetBeans.  
     Dynamically scrapes the URL from
     https://netbeans.apache.org/download/archive/index.html
-Identifier: com.github.jpiperberg.download.yaml.ApacheNetBeans-Win
+Identifier: com.github.jpiperberg.download.ApacheNetBeans-Win_yaml
 MinimumVersion: '2.3'
 Input:
     NAME: ApacheNetBeans
