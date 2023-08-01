@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>retrieves CVEs based on application name and version from https://cve.mitre.org/</string>
+    <key>Identifier</key>
+    <string>com.github.jpiperberg.RetrieveCVEList</string>
+    <key>Input</key>
+    <dict>
+    	<key>CVESource</key>
+    	<string>https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=</string>
+    	<!-- Requires the following keys to be set in Arguments -->
+    	<!-- 	<key>ApplicationName</key>>
+    			<key>AffectedVersion</key> 
+    			AffectedVersion should be the version prior to the version
+    			being autopkgd. Replace ' ' with '+' -->
+    	<key>RegEx</key>
+    	<string><![CDATA[(?<=name=)CVE-\d*-\d*(?=\")]]></string>
+    </dict>
+
+    <key>MinimumVersion</key>
+    <string>1.4.0</string>
+    <key>Process</key>
+    <array>
+    	<dict>
+        	<key>Processor</key>
+        	<string>com.github.jgstew.SharedProcessors/SharedUtilityMethods</string>
+        </dict>
+    	<dict>
+    		<key>Processor</key>
+    		<string>com.github.jgstew.SharedProcessors/URLTextSearcherArray</string>
+    		<key>Arguments</key>
+    		<dict>
+    			<key>curl_opts</key>
+    			<string>output %RECIPE_CACHE_DIR%/CVEPage.txt</string>
+    			<key>url</key>
+    			<string>%CVESource%%ApplicationName%+version+%AffectedVersion%"</string>
+    			<key>result_output_var_name</key>
+    			<string>CVEList</string>
+    			<key>re_pattern</key>
+                <string>%RegEx%</string>
+                <key>full_results</key>
+                <true/>
+    		</dict>
+    	</dict>
+    </array>
+</dict>
+</plist>
