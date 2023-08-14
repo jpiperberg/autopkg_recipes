@@ -1,0 +1,22 @@
+Description: Downloads the latest version of Adobe Digital Editions.
+Identifier: com.github.jpiperberg.download.AdobeDigitalEditions-Win
+MinimumVersion: 2.3.0
+Input:
+    NAME: AdobeDigitalEditions
+    SEARCH_URL: https://www.adobe.com/solutions/ebook/digital-editions/download.html
+    SEARCH_PATTERN: (?P<url>https://adedownload\.adobe\.com/pub/adobe/digitaleditions/ADE_.*?_Installer\.exe)
+    VERSION_SEARCH_PATTERN: (?<=<h2><b>Adobe Digital Editions )(?P<version>(\d*.)+\d)(?= Installers<\/b><\/h2>)
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    url: https://www.adobe.com/solutions/ebook/digital-editions/download.html
+    re_pattern: "%VERSION_SEARCH_PATTERN%"
+- Processor: URLTextSearcher
+  Arguments:
+    url: https://www.adobe.com/solutions/ebook/digital-editions/download.html
+    re_pattern: "%SEARCH_PATTERN%"
+- Processor: URLDownloader
+  Arguments: 
+    url: "%url%"
+    filename: "%NAME%-%version%.exe" 
+- Processor: EndOfCheckPhase
