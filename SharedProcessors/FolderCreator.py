@@ -18,6 +18,7 @@
 """Processor that creates a folder"""
 
 import os
+import shutil
 
 from autopkglib import FileCreator
 
