@@ -50,14 +50,13 @@ class FolderCreator(FileCreator):
 	}
 	output_variables = {}
 
-	def Create(self, folder_path, overwrite):
+	def Create(self, folder_path, overwrite, folder_mode=None):
 		self.output("creating folder_path")
 		if overwrite:
 		# Delete folder if it exists.
 			self.output("will overwrite if folder exists")
 			try:
-				if os.path.islink(folder_path) or os.path.isfile(folder_path
-				):
+				if os.path.islink(folder_path) or os.path.isfile(folder_path):
 					os.unlink(folder_path)
 				elif os.path.isdir(folder_path):
 					shutil.rmtree(folder_path)
@@ -71,19 +70,24 @@ class FolderCreator(FileCreator):
 		self.output("creating folder folder_path")
 		try:
 			os.makedirs(folder_path)
-			try:
-				if self.env['folder_mode']:
-					os.chmod(dirpath, int(self.env['folder_mode'], 8))
-					self.output("updating permissions")
-			except:
-				self.output("permissions left as default")
+			
 			self.output(f"Created {folder_path}")
 		except OSError as err:
 			raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
 
 
 	def main(self):
-		self.Create(self.env['folder_path'], self.env['overwrite'])
+		self.Create(self.env['folder_path'], self.env['overwrite'], 
+		if folder_mode in self.env:
+			try:
+				os.chmod(self.env['folder_path'], int(self.env['folder_mode'], 8))
+				self.output("updating permissions")
+			except:
+				raise ProcessorError(
+					f"Can't set permissions of {self.env['folder_path']}"   		
+					f" to {self.env['folder_mode']}")
+		else:
+			self.output("permissions left as default")self.env['folder_mode']
 		 
 if __name__ == "__main__":
 	PROCESSOR = FolderCreator()
