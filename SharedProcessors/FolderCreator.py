@@ -50,8 +50,10 @@ class FolderCreator(FileCreator):
 	output_variables = {}
 
 	def Create(self, folder_path, overwrite):
+		self.output("creating {folder_path}")
 		if overwrite:
 		# Delete folder if it exists.
+			self.output("overwrite true")
 			try:
 				if os.path.islink(folder_path) or os.path.isfile(folder_path
 				):
@@ -61,23 +63,26 @@ class FolderCreator(FileCreator):
 			except OSError as err:
 				raise ProcessorError(f"Can't remove {folder_path}: {err.strerror}")
 		else:
+			self.output("overwrite false")
 			if os.path.islink(folder_path) or os.path.isfile(folder_path) or os.path.isdir(folder_path):
 				raise ProcessorError(f"{folder_path} exists. Exiting: {err.strerror}")
 			else:
 				# Create folder_path. autopkghelper sets it to root:admin 01775.
+				print("creating folder")
 				try:
 					os.makedirs(folder_path)
 					if self.env['folder_mode']:
 						os.chmod(dirpath, int(self.env['folder_mode'], 8))
+						print("changing permissions")
 					self.output(f"Created {folder_path}")
 				except OSError as err:
 					raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
 
 
 	def main(self):
-		 self.Create(self.env['folder_path'], self.env['overwrite'])
-
-
+		self.output("Creating {self.env['folder_path]}")
+		self.Create(self.env['folder_path'], self.env['overwrite'])
+		 
 if __name__ == "__main__":
 	PROCESSOR = FolderCreator()
 	PROCESSOR.execute_shell()
