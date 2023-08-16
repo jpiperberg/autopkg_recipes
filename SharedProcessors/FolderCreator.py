@@ -70,9 +70,12 @@ class FolderCreator(FileCreator):
 		self.output("creating folder folder_path")
 		try:
 			os.makedirs(folder_path)
-			if self.env['folder_mode']:
-				os.chmod(dirpath, int(self.env['folder_mode'], 8))
-				self.output("updating permissions")
+			try:
+				if self.env['folder_mode']:
+					os.chmod(dirpath, int(self.env['folder_mode'], 8))
+					self.output("updating permissions")
+			except:
+				self.output("permissions left as default")
 			self.output(f"Created {folder_path}")
 		except OSError as err:
 			raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
