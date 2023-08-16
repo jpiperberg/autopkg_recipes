@@ -50,7 +50,7 @@ class FolderCreator(FileCreator):
 	}
 	output_variables = {}
 
-	def Create(self, folder_path, overwrite, folder_mode=None):
+	def Create(self, folder_path, overwrite):
 		self.output("creating folder_path")
 		if overwrite:
 		# Delete folder if it exists.
@@ -77,7 +77,7 @@ class FolderCreator(FileCreator):
 
 
 	def main(self):
-		self.Create(self.env['folder_path'], self.env['overwrite'], 
+		self.Create(self.env['folder_path'], self.env['overwrite']) 
 		if folder_mode in self.env:
 			try:
 				os.chmod(self.env['folder_path'], int(self.env['folder_mode'], 8))
