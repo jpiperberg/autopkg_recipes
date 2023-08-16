@@ -79,5 +79,5 @@ class FolderCreator(FileCreator):
 
 
 if __name__ == "__main__":
-PROCESSOR = FolderCreator()
-PROCESSOR.execute_shell()
+	PROCESSOR = FolderCreator()
+	PROCESSOR.execute_shell()
