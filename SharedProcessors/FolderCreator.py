@@ -66,16 +66,16 @@ class FolderCreator(FileCreator):
 			self.output("will not overwrite if folder exists")
 			if os.path.islink(folder_path) or os.path.isfile(folder_path) or os.path.isdir(folder_path):
 				raise ProcessorError(f"{folder_path} exists. Exiting: {err.strerror}")
-			# Create folder_path. autopkghelper sets it to root:admin 01775.
-			self.output("creating folder folder_path")
-			try:
-				os.makedirs(folder_path)
-				if self.env['folder_mode']:
-					os.chmod(dirpath, int(self.env['folder_mode'], 8))
-					self.output("updating permissions")
-				self.output(f"Created {folder_path}")
-			except OSError as err:
-				raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
+		# Create folder_path. autopkghelper sets it to root:admin 01775.
+		self.output("creating folder folder_path")
+		try:
+			os.makedirs(folder_path)
+			if self.env['folder_mode']:
+				os.chmod(dirpath, int(self.env['folder_mode'], 8))
+				self.output("updating permissions")
+			self.output(f"Created {folder_path}")
+		except OSError as err:
+			raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
 
 
 	def main(self):
