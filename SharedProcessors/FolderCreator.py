@@ -55,7 +55,7 @@ class FolderCreator(FileCreator):
 			try:
 				if os.path.islink(folder_path) or os.path.isfile(folder_path
 				):
-						os.unlink(folder_path)
+					os.unlink(folder_path)
 				elif os.path.isdir(folder_path):
 					shutil.rmtree(folder_path)
 			except OSError as err:
@@ -79,5 +79,5 @@ class FolderCreator(FileCreator):
 
 
 if __name__ == "__main__":
-	PROCESSOR = FolderCreator()
-	PROCESSOR.execute_shell()
+PROCESSOR = FolderCreator()
+PROCESSOR.execute_shell()
