@@ -78,16 +78,16 @@ class FolderCreator(FileCreator):
 
 	def main(self):
 		self.Create(self.env['folder_path'], self.env['overwrite']) 
-		if folder_mode in self.env:
+		if "folder_mode" in self.env:
 			try:
-				os.chmod(self.env['folder_path'], int(self.env['folder_mode'], 8))
-				self.output("updating permissions")
+				os.chmod(self.env["folder_path"], int(self.env["folder_mode"], 8))
+				self.output(f"updating permissions")
 			except:
 				raise ProcessorError(
 					f"Can't set permissions of {self.env['folder_path']}"   		
 					f" to {self.env['folder_mode']}")
 		else:
-			self.output("permissions left as default")self.env['folder_mode']
+			self.output(f"permissions left as default")
 		 
 if __name__ == "__main__":
 	PROCESSOR = FolderCreator()
