@@ -21,6 +21,7 @@ import os
 import shutil
 
 from autopkglib import FileCreator
+from autopkglib import ProcessorError
 
 __all__ = ["FolderCreator"]
 
