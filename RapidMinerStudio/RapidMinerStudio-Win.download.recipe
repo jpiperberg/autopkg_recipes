@@ -10,8 +10,6 @@
 	<dict>
 		<key>NAME</key>
 		<string>RapidMinerStudio</string>
-		<key>version</key>
-		<string>9.10</string>
 	</dict>
 	<key>MinimumVersion</key>
 	<string>2.3</string>
@@ -34,7 +32,6 @@
 			<key>Processor</key>
 			<string>EndOfCheckPhase</string>
 		</dict>
-        <!-->
         <dict>
             <key>Processor</key>
             <string>com.github.hansen-m.SharedProcessors/ExeVersionExtractor</string>
@@ -44,7 +41,6 @@
                 <string>%pathname%</string>
             </dict>
         </dict>
-        <-->
 	</array>
 </dict>
 </plist>
