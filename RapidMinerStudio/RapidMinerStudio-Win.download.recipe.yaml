@@ -6,13 +6,16 @@ Identifier: com.github.jpiperberg.download.RapidMinerStudio-Win
 MinimumVersion: '2.3'
 Input:
     NAME: RapidMinerStudio
-    
+    versionRegEx: "(?<=studio-)(?P<version>.+?)(?=-win64)"
 Process:
-    - Processor: URLDownloader
-      Arguments:
-        curl_opts: "--remote-header-name"
-        url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
-    - Processor: EndOfCheckPhase
-    - Processor: com.github.hansen-m.SharedProcessors/ExeVersionExtractor
-      Arguments: 
-        file_path: '%pathname%'
+- Processor: URLDownloader
+  Arguments:
+    prefetch_filename: True
+    url: 'https://releases.rapidminer.com/latest/rapidminer-studio/rapidminer-studio-win64-install.exe'
+- Processor: EndOfCheckPhase
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: "%pathname%"
+    re_pattern: "%versionRegEx%"
+#     - Processor: com.github.hansen-m.SharedProcessors/ExeVersionExtractor
