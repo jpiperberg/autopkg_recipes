@@ -14,7 +14,7 @@ Process:
     - Processor: EndOfCheckPhase
       Arguments:
           input_path: '%pathname%/RapidMiner Studio.app'
-          requirement: 'identifier "com.rapidminer.studio" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "3GRYJJQEPU"'
+          requirement: 'identifier "com.rapidminer.studio" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "4QKDE2L8ZZ"'
     - Processor: CodeSignatureVerifier
       Arguments: 
         input_plist_path: '%pathname%/RapidMiner Studio.app/Contents/Info.plist'
