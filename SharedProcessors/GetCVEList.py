@@ -86,9 +86,9 @@ class GetCVEList(URLTextSearcher):
         search_version = self.env.get("application_version")
         reversed_version = search_version.reverse()
         minor_version = (minor_version.split('.')).reverse()
-        if int(minor_version) == 0
+        if int(minor_version) == 0:
             
-        else
+        else:
             prior_minor_version = str(minor_version)
         
     def prepare_search_terms(self):
@@ -100,9 +100,9 @@ class GetCVEList(URLTextSearcher):
     def prepare_curl_cmd(self):
         """Assemble curl command and return it."""
         curl_cmd = super().prepare_curl_cmd()
-        if self.env.get(guess_prior_version)
+        if self.env.get(guess_prior_version):
             search_version = determine_prior_version()
-        else
+        else:
             search_version = self.env.get("application_version")
         # add search terms to url
         
