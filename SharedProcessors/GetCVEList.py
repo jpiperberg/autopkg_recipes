@@ -27,6 +27,7 @@ from autopkglib.URLTextSearcher import URLTextSearcher
 MATCH_MESSAGE = "Found matching text"
 NO_MATCH_MESSAGE = "No match found on URL"
 encoded_search_terms = ""
+url = "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="
 
 __all__ = ["GetCVEList"]
 
@@ -118,7 +119,6 @@ class GetCVEList(URLTextSearcher):
 
     def main(self):
         output_var_name = "cve_list"
-        self.env("url") = "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="
 
         # Prepare curl command
         curl_cmd = self.prepare_curl_cmd()
