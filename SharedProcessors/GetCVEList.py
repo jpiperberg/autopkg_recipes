@@ -87,10 +87,13 @@ class GetCVEList(URLTextSearcher):
         reversed_version = search_version.reverse()
         minor_version = (minor_version.split('.')).reverse()
         if int(minor_version) == 0:
-            prior_minor_version = str(9)
-            
+            prior_minor_version = "9"
+            #garbagefornow
+            reassembled_version = "12.8.8"
         else:
             prior_minor_version = str(minor_version)
+            # reassemble version
+        return reassembled_version
         
     def prepare_search_terms(self):
         """Replace spaces with search delimiter and special characters with %codes"""
@@ -109,7 +112,7 @@ class GetCVEList(URLTextSearcher):
         
         curl_cmd.append(self.env["url"])
         curl_cmd.append(self.env["encoded_search_terms"])
-        curl_cmd.append(self.env[])
+        curl_cmd.append(search_version])
         self.output('search url: %s' % curl_cmd)
         return curl_cmd
 
