@@ -27,7 +27,6 @@ from autopkglib.URLTextSearcher import URLTextSearcher
 MATCH_MESSAGE = "Found matching text"
 NO_MATCH_MESSAGE = "No match found on URL"
 encoded_search_terms = ""
-url = "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="
 
 __all__ = ["GetCVEList"]
 
@@ -42,6 +41,15 @@ class GetCVEList(URLTextSearcher):
             "description": {"String to separate results in case of multiple matches.  Defaults to ','."},
             "required": False,
             "default": ",",
+        },
+        "url": {
+            "desription": {
+                "array of search criteria.  Suggest vendor & app name."
+                "By default when making the request, they will be separated by '+'"
+                "Any special characters will be replaced with their %code equivalents"
+            },
+            "required": False, 
+            "default": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="    
         },
         "application_name": {
             "desription": {
