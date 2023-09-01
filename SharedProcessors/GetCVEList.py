@@ -112,7 +112,7 @@ class GetCVEList(URLTextSearcher):
         
         curl_cmd.append(self.env["url"])
         curl_cmd.append(self.env["encoded_search_terms"])
-        curl_cmd.append(search_version])
+        curl_cmd.append(search_version)
         self.output('search url: %s' % curl_cmd)
         return curl_cmd
 
