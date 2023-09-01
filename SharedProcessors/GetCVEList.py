@@ -87,6 +87,7 @@ class GetCVEList(URLTextSearcher):
         reversed_version = search_version.reverse()
         minor_version = (minor_version.split('.')).reverse()
         if int(minor_version) == 0:
+            prior_minor_version = str(9)
             
         else:
             prior_minor_version = str(minor_version)
