@@ -44,12 +44,17 @@ class GetCVEList(URLTextSearcher):
         },
         "url": {
             "desription": {
-                "array of search criteria.  Suggest vendor & app name."
-                "By default when making the request, they will be separated by '+'"
-                "Any special characters will be replaced with their %code equivalents"
+                "URL for searching"
             },
             "required": False, 
             "default": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="    
+        },
+        "re_pattern": {
+            "desription": {
+                "regex pattern to find results"
+            },
+            "required": False, 
+            "default": "(?<=name=)CVE-\d*-\d*(?=\")"    
         },
         "application_name": {
             "desription": {
