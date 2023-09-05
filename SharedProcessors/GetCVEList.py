@@ -3,25 +3,16 @@
 # Embraced and extended 2023 Jamie Piperberg
 # Refactoring 2018 Michal Moravec
 # Copyright 2015 Greg Neagle
-# Based on URLTextSearcher.py, Copyright 2014 Jesse Peterson
+# Based on URLTextSearcherArray.py, By jgstew
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""See docstring for URLTextSearcher class"""
+"""See docstring for URLTextSearcher class
+
+This processor extends the autopkglib.URLTextSearcher processor
+"""
 
 import re, urllib.parse
 
 from autopkglib import ProcessorError
-from autopkglib.URLGetter import URLGetter
 from autopkglib.URLTextSearcher import URLTextSearcher
 
 MATCH_MESSAGE = "Found matching text"
@@ -35,7 +26,7 @@ class GetCVEList(URLTextSearcher):
     on the text returned based on application name and version (version should be the version prior to the version being deployed). Returns all results by default, separated by a delimiter (default is comma).  
 
     Requires version 1.4."""
-    description = "Returns a list of CVEs based on application_name and application_version search terms"
+
     input_variables = {
         "results_delimiter":{
             "description": {"String to separate results in case of multiple matches.  Defaults to ','."},
@@ -43,9 +34,7 @@ class GetCVEList(URLTextSearcher):
             "default": ",",
         },
         "url": {
-            "desription": {
-                "URL for searching"
-            },
+            "desription": "URL for searching",
             "required": False, 
             "default": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="    
         },
@@ -71,6 +60,13 @@ class GetCVEList(URLTextSearcher):
                 "calculate_prior_version"
             },
             "required": True,       
+        },
+        "full_results": {
+            "desription": {
+                "Return all results"
+            },
+            "required": False,     
+            "default":  True,    
         },
         "guess_prior_version":{
             "description": {
