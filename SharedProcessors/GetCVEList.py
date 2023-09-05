@@ -28,54 +28,57 @@ class GetCVEList(URLTextSearcher):
     Requires version 1.4."""
 
     input_variables = {
-        "results_delimiter":{
-            "description": {"String to separate results in case of multiple matches.  Defaults to ','."},
-            "required": False,
-            "default": ",",
+        "re_pattern": {
+            "desription": (
+                "regex pattern to find results"
+            ),
+            "required": False, 
+            "default": "(?<=name=)CVE-\d*-\d*(?=\")"    
         },
         "url": {
             "desription": "URL for searching",
             "required": False, 
             "default": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="    
         },
-        "re_pattern": {
-            "desription": {
-                "regex pattern to find results"
-            },
-            "required": False, 
-            "default": "(?<=name=)CVE-\d*-\d*(?=\")"    
+        "results_delimiter": {
+            "description": (
+            	"String to separate results in case of multiple matches."
+            	"Defaults to ','."
+            ),
+            "required": False,
+            "default": ",",
         },
         "application_name": {
-            "desription": {
+            "desription": (
                 "array of search criteria.  Suggest vendor & app name."
                 "By default when making the request, they will be separated by '+'"
                 "Any special characters will be replaced with their %code equivalents"
-            },
+            ),
             "required": True,       
         },
         "application_version": {
-            "desription": {
+            "desription": (
                 "Version prior to version being patched."
                 "If only current version can be patched, pass \"True\" to"
                 "calculate_prior_version"
-            },
+            ),
             "required": True,       
         },
-        "full_results": {
-            "desription": {
-                "Return all results"
-            },
-            "required": False,     
-            "default":  True,    
-        },
-        "guess_prior_version":{
-            "description": {
+        "guess_prior_version": {
+            "description": (
                 "Attempts to guess prior version of application"
                 "will decrement the last component of the version passed"
                 "(and priorcomponent(s) if last component is 0"
-            },
+            ),
             "required:": False,    
-            "default":  False,  
+            "default": False, 
+        },
+        "full_results": {
+            "desription": (
+                "Return all results"
+            ),
+            "required": False,     
+            "default":  True,    
         },
     }
     output_variables = {
