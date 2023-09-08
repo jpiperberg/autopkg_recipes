@@ -158,7 +158,7 @@ class GetCVEList(URLTextSearcher):
             
         else:
             version_list[(component_count - 1)] = (build_version - 1)
-            self.output('version_list %s' % str(version_list))
+#             self.output('version_list %s' % str(version_list))
         # reassemble version
         i = 0
         reassembled_version = ""
@@ -167,19 +167,19 @@ class GetCVEList(URLTextSearcher):
             i += 1
             
         reassembled_version += str(version_list[component_count - 1])
-        self.output('reassembled_version %s' % str(reassembled_version))
+#         self.output('reassembled_version %s' % str(reassembled_version))
         return reassembled_version
         
     def prepare_search_terms(self):
         """Replace spaces with search delimiter and special characters with %codes"""
-        self.output('Search terms: %s' % self.env["application_name"])
+#         self.output('Search terms: %s' % self.env["application_name"])
         search_terms = self.env["application_name"]
         search_count = len(search_terms)
         i = 0
         self.encoded_search_terms = []
         while i < search_count:
             self.encoded_search_terms.append(urllib.parse.quote_plus(str(search_terms[i]), safe='', encoding=None, errors=None)) 
-            self.output('Encoded search terms: %s' % self.encoded_search_terms[i])
+#             self.output('Encoded search terms: %s' % self.encoded_search_terms[i])
             i += 1
             self.output('i = %s' % str(i))
                         
@@ -199,7 +199,7 @@ class GetCVEList(URLTextSearcher):
             self.env["url"] += "+"
             i += 1
         self.env["url"] += search_version
-        self.output('search url: %s' % self.env.get("url"))
+#         self.output('search url: %s' % self.env.get("url"))
         curl_cmd = super().prepare_curl_cmd()
 
         return curl_cmd
