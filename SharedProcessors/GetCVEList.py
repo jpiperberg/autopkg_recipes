@@ -1,19 +1,25 @@
 #!/usr/local/autopkg/python
-# 
-# Embraced and extended 2023 Jamie Piperberg
-# Refactoring 2018 Michal Moravec
-# Copyright 2015 Greg Neagle
-# Based on URLTextSearcherArray.py, By jgstew
-#
-"""See docstring for URLTextSearcher class
 
-This processor extends the autopkglib.URLTextSearcher processor
+# Uses the mitre.org database to retrieve CVEs for passed
+# Application Name and version
+# Attempts to decrement version if requested. 
+
+"""
+
+This processor extends the autopkglib.URLTextSearcherArray processor
+by JGStew to provide easier to use functionality to retrieve CVEs
+
 """
 
 import re, urllib.parse
 
-from autopkglib import ProcessorError
-from autopkglib.URLTextSearcher import URLTextSearcher
+from autopkglib import ProcessorError  
+from autopkglib.URLTextSearcher import URLTextSearcher  
+
+# import sys
+
+# sys.path.append("/Library/AutoPkg")
+
 
 MATCH_MESSAGE = "Found matching text"
 NO_MATCH_MESSAGE = "No match found on URL"
@@ -21,29 +27,57 @@ encoded_search_terms = ""
 
 __all__ = ["GetCVEList"]
 
-class GetCVEList(URLTextSearcher):
-    """Performs a search of mitre.org database and performs a regular expression match
-    on the text returned based on application name and version (version should be the version prior to the version being deployed). Returns all results by default, separated by a delimiter (default is comma).  
 
+class GetCVEList(URLTextSearcher):
+    """Downloads a URL using curl and performs a regular expression match
+    on the text. Returns an Array of matches instead of first match.
     Requires version 1.4."""
 
     input_variables = {
         "re_pattern": {
-            "desription": (
-                "regex pattern to find results"
-            ),
+            "description": "Regular expression (Python) to match against page.",
             "required": False, 
             "default": "(?<=name=)CVE-\d*-\d*(?=\")"    
         },
         "url": {
-            "desription": "URL for searching",
+            "description": "URL to download", 
             "required": False, 
             "default": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword="    
         },
+        "result_output_var_name": {
+            "description": (
+                "The name of the output variable that is returned "
+                "by the match. If not specified then a default of "
+                '"CVEList" will be used.'
+            ),
+            "required": False,
+            "default": "CVEList",
+        },
+        "request_headers": {
+            "description": (
+                "Optional dictionary of headers to include with "
+                "the download request."
+            ),
+            "required": False,
+        },
+        "curl_opts": {
+            "description": (
+                "Optional array of curl options to include with "
+                "the download request."
+            ),
+            "required": False,
+        },
+        "re_flags": {
+            "description": (
+                "Optional array of strings of Python regular "
+                "expression flags. E.g. IGNORECASE."
+            ),
+            "required": False,
+        },
         "results_delimiter": {
             "description": (
-            	"String to separate results in case of multiple matches."
-            	"Defaults to ','."
+                "String to separate results in case of multiple matches."
+                "Defaults to ','."
             ),
             "required": False,
             "default": ",",
@@ -65,24 +99,23 @@ class GetCVEList(URLTextSearcher):
             "required": True,       
         },
         "guess_prior_version": {
-            "description": (
+            "desription": (
                 "Attempts to guess prior version of application"
                 "will decrement the last component of the version passed"
                 "(and priorcomponent(s) if last component is 0"
             ),
-            "required:": False,    
+            "required": False,       
             "default": False, 
         },
         "full_results": {
-            "desription": (
-                "Return all results"
+            "description": (
+                "boolean flag - if true return all results" "Default: False"
             ),
-            "required": False,     
-            "default":  True,    
+            "required": False,
         },
     }
     output_variables = {
-        "cve_list": {
+        "result_output_var_name": {
             "description": (
                 "First matched sub-pattern from input found on the fetched "
                 "URL. Note the actual name of variable depends on the input "
@@ -93,63 +126,107 @@ class GetCVEList(URLTextSearcher):
     }
 
     description = __doc__
-    
+
+    def re_search(self, content):
+        """Search for re_pattern in content"""
+
+        re_pattern = re.compile(self.env["re_pattern"], flags=self.prepare_re_flags())
+        match_array = re_pattern.findall(content)
+
+        if not match_array:
+            raise ProcessorError(f"{NO_MATCH_MESSAGE}: {self.env['url']}")
+
+        # return array of matches
+        return match_array
+        
     def determine_prior_version(self):
         """attempts to decrement last section of version passed"""
-        search_version = self.env.get("application_version")
-        reversed_version = search_version.reverse()
-        minor_version = (minor_version.split('.')).reverse()
-        if int(minor_version) == 0:
-            prior_minor_version = "9"
-            #garbagefornow
-            reassembled_version = "12.8.8"
+        search_version = self.env["application_version"]
+        version_list = search_version.split('.')
+        component_count = len(version_list)
+        build_version = int(version_list[(component_count - 1)])
+         
+        if build_version == 0:
+            version_list[component_count - 1] = "9"
+            i = component_count - 2
+            while i >= 0:
+                if int(version_list[i]) == 0:
+                    version_list[i] = 9
+                    i -= 1
+                else:
+                    i = -1
+            
         else:
-            prior_minor_version = str(minor_version)
-            # reassemble version
+            version_list[(component_count - 1)] = (build_version - 1)
+            self.output('version_list %s' % str(version_list))
+        # reassemble version
+        i = 0
+        reassembled_version = ""
+        while i < (component_count - 1):
+            reassembled_version += str(version_list[i]) + "."
+            i += 1
+            
+        reassembled_version += str(version_list[component_count - 1])
+        self.output('reassembled_version %s' % str(reassembled_version))
         return reassembled_version
         
     def prepare_search_terms(self):
         """Replace spaces with search delimiter and special characters with %codes"""
         self.output('Search terms: %s' % self.env["application_name"])
-        self.env.encoded_search_terms = urllib.parse.urlencode(self.env.get('application_name'))
-        self.output('Encoded search terms: %s' % self.env["encoded_search_terms"])
-            
+        search_terms = self.env["application_name"]
+        search_count = len(search_terms)
+        i = 0
+        self.encoded_search_terms = []
+        while i < search_count:
+            self.encoded_search_terms.append(urllib.parse.quote_plus(str(search_terms[i]), safe='', encoding=None, errors=None)) 
+            self.output('Encoded search terms: %s' % self.encoded_search_terms[i])
+            i += 1
+            self.output('i = %s' % str(i))
+                        
     def prepare_curl_cmd(self):
         """Assemble curl command and return it."""
-        curl_cmd = super().prepare_curl_cmd()
-        if self.env.get(guess_prior_version):
-            search_version = determine_prior_version()
-        else:
-            search_version = self.env.get("application_version")
-        # add search terms to url
         
-        curl_cmd.append(self.env["url"])
-        curl_cmd.append(self.env["encoded_search_terms"])
-        curl_cmd.append(search_version)
-        self.output('search url: %s' % curl_cmd)
+        self.prepare_search_terms()
+        if self.env.get("guess_prior_version"):
+            search_version = self.determine_prior_version()
+        else:
+            search_version = self.env("application_version")
+
+        search_count = len(self.encoded_search_terms)
+        i = 0
+        while i < search_count:
+            self.env["url"] += self.encoded_search_terms[i]
+            self.env["url"] += "+"
+            i += 1
+        self.env["url"] += search_version
+        self.output('search url: %s' % self.env.get("url"))
+        curl_cmd = super().prepare_curl_cmd()
+
         return curl_cmd
 
+
     def main(self):
+        """execution starts here"""
+
         output_var_name = "cve_list"
+        full_results = self.env.get("full_results", False)
 
         # Prepare curl command
         curl_cmd = self.prepare_curl_cmd()
 
         # Execute curl command and search in content
-        content = super().download_with_curl(curl_cmd)
-        groupmatch, groupdict = super().re_search(content)
+        content = self.download_with_curl(curl_cmd)
 
-        # favor a named group over a normal group match
-        if output_var_name not in groupdict.keys():
-            groupdict[output_var_name] = groupmatch
+        self.output(f"URL Content:\n{content}", 5)
 
-        self.output_variables = {}
-        for key in groupdict.keys():
-            self.env[key] = groupdict[key]
-            self.output(f"{MATCH_MESSAGE} ({key}): {self.env[key]}")
-            self.output_variables[key] = {
-                "description": "Matched regular expression group"
-            }
+        match_array = self.re_search(content)
+
+        self.output(match_array, 2)
+
+        if not full_results:
+            match_array = list(set(match_array))
+
+        self.env[output_var_name] = match_array
 
 
 if __name__ == "__main__":
