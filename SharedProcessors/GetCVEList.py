@@ -145,7 +145,7 @@ class GetCVEList(URLTextSearcher):
         version_list = search_version.split('.')
         component_count = len(version_list)
         build_version = int(version_list[(component_count - 1)])
-         
+#         self.output('build version: %s' % str(build_version))   
         if build_version == 0:
             version_list[component_count - 1] = "9"
             i = component_count - 2
@@ -154,6 +154,9 @@ class GetCVEList(URLTextSearcher):
                     version_list[i] = 9
                     i -= 1
                 else:
+                    minor_version = int(version_list[i])
+                    minor_version -= 1
+                    version_list[i] = str(minor_version)
                     i = -1
             
         else:
@@ -181,7 +184,7 @@ class GetCVEList(URLTextSearcher):
             self.encoded_search_terms.append(urllib.parse.quote_plus(str(search_terms[i]), safe='', encoding=None, errors=None)) 
 #             self.output('Encoded search terms: %s' % self.encoded_search_terms[i])
             i += 1
-            self.output('i = %s' % str(i))
+#             self.output('i = %s' % str(i))
                         
     def prepare_curl_cmd(self):
         """Assemble curl command and return it."""
