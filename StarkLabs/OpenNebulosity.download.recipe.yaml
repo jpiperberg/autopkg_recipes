@@ -1,0 +1,57 @@
+Description: Downloads the latest version of the OpenNebulosity application, extracts the zip file, verifies the signature, gets the version and sets the pathname variable to path to the unzipped package
+Identifier: com.github.jpiperberg.download.OpenNebulosity
+Input:
+  NAME: OpenNebulosity
+  REPO: 'celstark/OpenNebulosity'
+MinimumVersion: 2.3.0
+Process:
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    github_repo: '%REPO%'
+    latest_only: True
+    asset_regex: '.*\.pkg\.zip'
+- Processor: URLDownloader
+#   Arguments:
+#     url: '%DOWNLOAD_URL%'
+- Processor: Unarchiver
+  Arguments:
+    archive_path: '%pathname%'
+    destination_path: '%RECIPE_CACHE_DIR%/OpenNebulosity/'
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: "%pathname%"
+    re_pattern: '(?<=downloads\/).*(?=\.zip)'
+    result_output_var_name: 'pkg_name'
+- Processor: FlatPkgUnpacker
+  Arguments:
+    destination_path: '%RECIPE_CACHE_DIR%/temp/flat_pkg'
+    flat_pkg_path: '%RECIPE_CACHE_DIR%/OpenNebulosity/%pkg_name%'
+    purge_destination: True
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%flat_pkg_path%'
+    expected_authority_names: 
+      - 'Developer ID Installer: Craig Stark (QPLDUH9V6T)'
+      - 'Developer ID Certification Authority'
+      - 'Apple Root CA'
+- Processor: PkgPayloadUnpacker
+  Arguments:
+    destination_path: '%RECIPE_CACHE_DIR%/temp/payload/'
+    pkg_payload_path: '%RECIPE_CACHE_DIR%/temp/flat_pkg/com.StarkLabs.nebulosity.pkg/Payload'
+    purge_destination: True
+- Processor: FileFinder
+  Arguments:
+    pattern: '%RECIPE_CACHE_DIR%/temp/payload/*.app'
+- Processor: Versioner
+  Arguments:
+    input_plist_path: '%found_filename%/Contents/Info.plist'
+# set pathname to the unzipped package for child recipes
+- Processor: EndOfCheckPhase
+  Arguments:
+    pathname: '%flat_pkg_path%'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/temp'
+      - '%RECIPE_CACHE_DIR%/downloads'
