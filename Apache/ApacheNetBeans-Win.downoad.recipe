@@ -11,7 +11,7 @@
         <key>NAME</key>
         <string>ApacheNetBeans</string>
         <key>BASE_URL</key>
-        <string>https://netbeans.apache.org</string>
+        <string>https://dlcdn.apache.org/netbeans/netbeans-installers/</string>
     </dict>
     <key>MinimumVersion</key>
     <string>1.4.0</string>
@@ -23,9 +23,9 @@
             <key>Arguments</key>
             <dict>
                 <key>url</key>
-                <string>%BASE_URL%/download/archive/index.html</string>
+                <string>%BASE_URL%</string>
                 <key>re_pattern</key>
-                <string><![CDATA[(?<=button success\".href=\").*(?=\")]]></string>
+                <string><![CDATA[(?<=href=\")[0-9]+\/(?=\")]]></string>
                 <key>result_output_var_name</key>
                 <string>match</string>
             </dict>
@@ -38,7 +38,7 @@
                 <key>url</key>
                 <string>%BASE_URL%%match%</string>
                 <key>re_pattern</key>
-                <string><![CDATA[(?<=\").*\.exe(?=\")]]></string>
+                <string><![CDATA[(?<=href=\").*\.exe(?=\")]]></string>
                 <key>result_output_var_name</key>
                 <string>intermediateURL</string>
             </dict>
@@ -51,12 +51,13 @@
                 <key>url</key>
                 <string>%BASE_URL%%match%</string>
                 <key>re_pattern</key>
-                <string><![CDATA[(?<=64.exe<\/a> \(<a href=\").*\.sha512(?=\")]]></string>
+                <string><![CDATA[(?<=ref=\").*x64\.exe\.sha512(?=\")]]></string>
                 <key>result_output_var_name</key>
                 <string>shaURL</string>
             </dict>
         </dict>
-        <dict>
+        <!-- 
+<dict>
             <key>Processor</key>
             <string>URLTextSearcher</string>
             <key>Arguments</key>
@@ -69,6 +70,7 @@
                 <string>downloadURL</string>
             </dict>
         </dict>
+ -->
         <dict>
             <key>Processor</key>
             <string>URLTextSearcher</string>
@@ -77,7 +79,7 @@
                 <key>url</key>
                 <string>%BASE_URL%%match%</string>
                 <key>re_pattern</key>
-                <string><![CDATA[(?<=Downloading Apache NetBeans\s)\d*(?=<)]]></string>
+                <string><![CDATA[(?<=installers\/)\d*(?=<\/title>)]]></string>
                 <key>result_output_var_name</key>
                 <string>majorVersion</string>
             </dict>
@@ -88,7 +90,7 @@
             <key>Arguments</key>
             <dict>
             	<key>url</key>
-            	<string>%downloadURL%</string>
+            	<string>%BASE_URL%%match%%intermediateURL%</string>
                 <key>filename</key>
                 <string>%NAME%.exe</string>
             </dict>
@@ -99,7 +101,7 @@
             <key>Arguments</key>
             <dict>
             	<key>url</key>
-            	<string>%shaURL%</string>
+            	<string>%BASE_URL%%match%%shaURL%</string>
                 <key>filename</key>
                 <string>%NAME%.sha512</string>
             </dict>
@@ -157,7 +159,7 @@
                 <key>output_var_name</key>
                 <string>version</string>
                 <key>bes_relevance</key>
-                <string>preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%221000" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"</string>
+                <string>preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%22" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"</string>
             </dict>
         </dict>
         <dict>

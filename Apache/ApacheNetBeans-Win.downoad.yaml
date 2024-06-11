@@ -6,40 +6,35 @@ Identifier: com.github.jpiperberg.download.ApacheNetBeans-Win_yaml
 MinimumVersion: '2.3'
 Input:
     NAME: ApacheNetBeans
-    BASE_URL: https://netbeans.apache.org
+    BASE_URL: https://dlcdn.apache.org/netbeans/netbeans-installers/
 Process:
     - Processor: URLTextSearcher
       Arguments:
-        url: '%BASE_URL%/download/archive/index.html'
-        re_pattern: (?<=button success\".href=\").*(?=\")
-        result_output_var_name<: match
+        url: '%BASE_URL%'
+        re_pattern: (?<=href=\")[0-9]+\/(?=\")
+        result_output_var_name: match
     - Processor: URLTextSearcher
       Arguments:
         url: '%BASE_URL%%match%'
-        re_pattern: (?<=\").*\.exe(?=\")
+        re_pattern: (?<=href=\").*\.exe(?=\")
         result_output_var_name: intermediateURL
     - Processor: URLTextSearcher
       Arguments:
         url: '%BASE_URL%%match%'
-        re_pattern: (?<=64.exe<\/a> \(<a href=\").*\.sha512(?=\")
+        re_pattern: (?<=ref=\").*x64\.exe\.sha512(?=\")
         result_output_var_name: shaURL
     - Processor: URLTextSearcher
       Arguments:
-        url: '%intermediateURL%'
-        re_pattern: https:\/\/dlcdn\.apache\.org\/netbeans\/netbeans-installers.*(?=\")
-        result_output_var_name: downloadURL
-    - Processor: URLTextSearcher
-      Arguments:
         url: '%BASE_URL%%match%'
-        re_pattern: (?<=Downloading Apache NetBeans ).*(?=<)
+        re_pattern: (?<=installers\/)\d*(?=<\/title>)
         result_output_var_name: majorVersion
     - Processor: URLDownloader
       Arguments:
-        url: '%downloadURL%'
+        url: '%BASE_URL%%match%%intermediateURL%'
         filename: '%NAME%.exe'
     - Processor: URLDownloader
       Arguments: 
-        url: '%shaURL%'
+        url: '%BASE_URL%%match%%shaURL%'
         filename: '%NAME%.sha512'
     - Processor: BESRelevanceProvider
       Arguments: 
@@ -59,7 +54,7 @@ Process:
     - Processor: com.github.hansen-m.SharedProcessors/BESRelevanceProvider
       Arguments:
         output_var_name: version
-        bes_relevance: 'preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%221000" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"'
+        bes_relevance: 'preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%22" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"'
     - Processor: StopProcessingIf
       Arguments:
         predicate: version == "" OR version == "None"
