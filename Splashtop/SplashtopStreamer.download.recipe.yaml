@@ -16,6 +16,7 @@ Process:
       - 'Developer ID Certification Authority'
       - 'Apple Root CA'
     input_path: '%pathname%/Splashtop Streamer.pkg'
+
 - Processor: FlatPkgUnpacker
   Arguments:
     destination_path: '%RECIPE_CACHE_DIR%/unpack'
@@ -30,3 +31,14 @@ Process:
   Arguments:
     input_plist_path: '%RECIPE_CACHE_DIR%/Applications/Splashtop Streamer.app/Contents/Info.plist'
     plist_version_key: CFBundleShortVersionString
+- Processor: Copier
+  Arguments:
+    source_path: '%pathname%/Splashtop Streamer.pkg'
+    destination_path: '%RECIPE_CACHE_DIR%/Splashtop Streamer.pkg'
+- Processor: EndOfCheckPhase
+  Arguments:
+    pkg_path: '%RECIPE_CACHE_DIR%/Splashtop Streamer.pkg'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/unpack'
