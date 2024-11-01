@@ -1,9 +1,9 @@
-Description: 'Downloads the latest version FileZilla for Mac Client.'
-Identifier: 'com.github.jpiperberg.download.FileZilla'
+Description: 'Downloads the latest version FileZilla for Mac Server.'
+Identifier: 'com.github.jpiperberg.download.FileZillaServer'
 Input:
-  NAME: FileZilla
-  DOWNLOAD_URL: 'https://filezilla-project.org/download.php?show_all=1'
-  VERSION_URL: 'https://filezilla-project.org/download.php?type=client'
+  NAME: FileZilla_Server
+  DOWNLOAD_URL: 'https://filezilla-project.org/download.php?show_all=1&type=server'
+  VERSION_URL: 'https://filezilla-project.org/download.php?type=server'
   CHANNEL: release
   # pass arm64 for Apple Silicon
   ARCH: 'x86'
@@ -13,21 +13,21 @@ Process:
 - Processor: URLTextSearcher
   Arguments:
     url: "%VERSION_URL%"
-    re_pattern: "The latest stable version of FileZilla Client is ([0-9.]+)"
+    re_pattern: "The latest stable version of FileZilla Server is ([0-9.]+)"
     request_headers:
       user-agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
     result_output_var_name: version
 - Processor: URLTextSearcher
   Arguments:
     url: '%DOWNLOAD_URL%'
-    re_pattern: 'https:\/\/.*client\/FileZilla_%version%_macos-%ARCH%.*.tar.bz2\?[^\"]+'
+    re_pattern: 'https:\/\/.*server/%NAME%_%version%_macos-%ARCH%.*.tar.bz2\?[^\"]+'
     request_headers:
       user-agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
-    result_output_var_name: archive_url
+    result_output_var_name: package_url
 - Processor: URLDownloader
   Arguments:
     CHECK_FILESIZE_ONLY: true
-    url: "%archive_url%"
+    url: "%package_url%"
     filename: "%NAME%-%ARCH%-%version%.tar.bz2"
 - Processor: EndOfCheckPhase
 - Processor: Unarchiver
@@ -35,5 +35,5 @@ Process:
     purge_destination: "true"
 - Processor: CodeSignatureVerifier
   Arguments:
-    input_path: "%RECIPE_CACHE_DIR%/%NAME%/FileZilla.app"
-    requirement: 'identifier "org.filezilla-project.filezilla" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5VPGKXL75N"'
+    input_path: "%RECIPE_CACHE_DIR%/%NAME%/FileZilla Server.app"
+    requirement: 'identifier "org.filezilla-project.filezilla-server" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5VPGKXL75N"'
