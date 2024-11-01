@@ -1,0 +1,35 @@
+Description: 'Downloads and packages the latest version of Wireshark for macOS.'
+Identifier: com.github.jpiperberg.pkg.Wireshark
+Input: 
+  NAME: Wireshark
+  # Arm or Intel
+  ARCH: Arm
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    url: 'https://www.wireshark.org/download.html'
+    re_pattern: 'href="https:\/\/[^"]*(?P<match>osx/Wireshark[^"]*%ARCH%[^"]*64\.dmg)"'
+    re_flags: IGNORECASE
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://www.wireshark.org/download/%match%'
+    filename: '%NAME%.dmg'
+- Processor: Versioner
+  Arguments:
+    input_plist_path: '%pathname%/Wireshark.app/Contents/Info.plist'
+- Processor: EndOfCheckPhase
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%pathname%/Wireshark.app'
+    requirement: |
+      identifier "org.wireshark.Wireshark" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "7Z6EMTD2C6"
+- Processor: AppDmgVersioner
+  Arguments:
+    dmg_path: '%pathname%'
+- Processor: AppPkgCreator
+  Arguments:
+    pkg_path: '%RECIPE_CACHE_DIR%/%NAME%-%ARCH%-%version%.pkg'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/downloads/'

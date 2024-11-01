@@ -1,0 +1,18 @@
+Description: 'Downloads and packages the latest version of FileZilla Client.'
+Identifier: com.github.jpiperberg.pkg.FileZilla
+ParentRecipe: 'com.github.jpiperberg.download.FileZilla'
+Input: 
+  NAME: FileZilla
+  # pass arm64 for Apple Silicon
+  ARCH: 'x86'
+Process:
+- Processor: AppPkgCreator
+  Arguments:
+    # input_path is what was sent to code signature verifier in the parent recipe
+    app_path: '%input_path%'
+    pkg_path: '%RECIPE_CACHE_DIR%/%NAME%-%ARCH%-%version%.pkg'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/%NAME%'
+      - '%RECIPE_CACHE_DIR%/downloads/'
