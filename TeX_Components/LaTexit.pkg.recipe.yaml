@@ -1,0 +1,18 @@
+Description: 'Downloads and packages the latest version of LaTeXit.'
+Identifier: com.github.jpiperberg.pkg.LaTeXit
+ParentRecipe: 'com.github.scriptingosx.download.LaTeXiT'
+Input: 
+  NAME: LaTeXit
+Process:
+- Processor: AppDmgVersioner
+  Arguments:
+    dmg_path: '%pathname%'
+- Processor: AppPkgCreator
+  Arguments:
+    # input_path is what was sent to code signature verifier in the parent recipe
+    app_path: '%input_path%'
+    pkg_path: '%RECIPE_CACHE_DIR%/%NAME%-Universal-%version%.pkg'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%pathname%'
