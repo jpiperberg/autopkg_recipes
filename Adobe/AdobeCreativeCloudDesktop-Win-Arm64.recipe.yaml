@@ -36,6 +36,9 @@ Process:
         following texts of first "<version>" of preceding texts of firsts "</version>" of lines of file "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
     output_var_name: version
 
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: 'version == "" OR version == "None"'
 # - Processor: com.github.triti.SharedProcessors/XMLReader
 #   Arguments:
 #     xml_path: "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
