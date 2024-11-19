@@ -33,7 +33,7 @@ Process:
   Arguments:
     # bes_filepath: minimum_os_version
     bes_relevance: |
-        following texts of first "<version>" of preceding texts of firsts "</version>" of  lines of file "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
+        following texts of first "<version>" of preceding texts of firsts "</version>" of lines of file "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
     output_var_name: version
 
 # - Processor: com.github.triti.SharedProcessors/XMLReader
