@@ -18,7 +18,7 @@ Process:
     result_output_var_name: download_url
 - Processor: URLDownloader
   Arguments:
-    filename: "%NAME%-winarm64.zip"
+    filename: "%NAME%-%version%-winarm64.zip"
     url: '%download_url%'
 # - Processor: Unarchiver
 #   Arguments:
