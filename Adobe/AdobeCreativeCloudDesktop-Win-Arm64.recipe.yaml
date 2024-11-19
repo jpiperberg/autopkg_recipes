@@ -1,0 +1,54 @@
+Description: Downloads the latest version of Adobe's Creative Cloud Installer for Windows.
+Identifier: com.github.jpiperberg.download.AdobeCreativeCloudInstaller-Win-Arm64
+Input:
+  NAME: CreativeCloudInstaller
+  SEARCH_URL: "https://helpx.adobe.com/download-install/kb/creative-cloud-desktop-app-download.html"
+MinimumVersion: 2.3.0
+
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    re_pattern: '(?<=href=\")https:\/\/ccmdls.adobe.com.*winarm64.*\.zip(?=\")'
+    url: "%SEARCH_URL%"
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: "%match%"
+    re_pattern: 'https:\/\/.*\.zip(?=\" target)'
+    result_output_var_name: download_url
+- Processor: URLDownloader
+  Arguments:
+    filename: "%NAME%-winarm64.zip"
+    url: '%download_url%'
+# - Processor: Unarchiver
+#   Arguments:
+#     purge_destination: "true"
+
+- Processor: com.github.hansen-m.SharedProcessors/WinInstallerExtractor
+  Arguments:
+    exe_path: '%pathname%'
+    ignore_errors: True
+    extract_dir: InstallerExtract
+- Processor: BESRelevanceProvider
+  Arguments:
+    # bes_filepath: minimum_os_version
+    bes_relevance: |
+        following texts of first "<version>" of preceding texts of firsts "</version>" of  lines of file "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
+    output_var_name: version
+
+# - Processor: com.github.triti.SharedProcessors/XMLReader
+#   Arguments:
+#     xml_path: "%RECIPE_CACHE_DIR%/InstallerExtract/packages/ApplicationInfo.xml"
+#     elements: 
+#       xpath: "version"
+    
+# - Processor: com.github.hansen-m.SharedProcessors/BESRelevanceProvider
+#   Arguments:
+#     bes_filepath: '%pathname%'
+#     output_var_name: version
+#     bes_relevance: 'preceding text of first "%22" of following texts of first "VALUE %22ProductVersion%22,    %22" of concatenation "" of substrings separated by "%00" of concatenation ";" of lines of file "%RECIPE_CACHE_DIR%/InstallerExtract/.rsrc/version.txt" as version'
+# - Processor: PathDeleter
+#   Arguments:
+#     path_list:
+#       - '%RECIPE_CACHE_DIR%/InstallerExtract'
+- Processor: EndOfCheckPhase
