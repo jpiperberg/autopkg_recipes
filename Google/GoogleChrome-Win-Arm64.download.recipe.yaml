@@ -1,5 +1,5 @@
 Description: Downloads latest Google Chrome Arm64 MSI for Windows.
-Identifier: 'com.github.jpiperberg.download.googlechromeWinArm64'
+Identifier: com.github.jpiperberg.download.googlechrome-win-arm64
 Input:
   NAME: GoogleChrome-Arm64
   DOWNLOAD_URL: https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise_arm64.msi
