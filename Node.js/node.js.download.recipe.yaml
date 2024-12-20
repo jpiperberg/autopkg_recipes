@@ -5,18 +5,18 @@ Input:
   NAME: Node.js
   base_url: 'https://nodejs.org'
   # Added for flexibility
-  # platform can be nothing (macOS universal), win, linux, darwin, aix
-  # extension can be .pkg, (.msi, .zip, .7z,)Windows .tar.gz or .tar.xz (win, darwin, aix and linux)
-  # ARCH can be nothing (macOS universal) x64, arm64, (armv7l, s390x, ppc64le)linux
+  # platform can be nothing (macOS universal), -win, -linux, -darwin, -aix
+  # extension can be pkg, (msi, zip, 7z,)Windows tar.gz or tar.xz (win, darwin, aix and linux)
+  # ARCH can be nothing (macOS universal) -x64, -arm64, (-armv7l, -s390x, -ppc64le)linux
   platform: ''
-  extension: '.pkg'
+  extension: 'pkg'
   ARCH: ''
 MinimumVersion: 2.3.0
 Process:
 - Processor: URLTextSearcher
   Arguments:
     url: '%base_url%/dist/latest'
-    re_pattern: '(?P<download_url>(?<=\").*node-v(?P<version>[\d\.]+)\.pkg(?=\"))'
+    re_pattern: '(?P<download_url>(?<=\").*node-v(?P<version>[\d\.]+)%platform%%ARCH%\.%extension%(?=\"))'
 - Processor: URLDownloader
   Arguments:
     url: '%base_url%%download_url%'
