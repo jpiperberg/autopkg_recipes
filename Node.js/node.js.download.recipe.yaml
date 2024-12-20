@@ -8,6 +8,7 @@ Input:
   # platform can be nothing (macOS universal), -win, -linux, -darwin, -aix
   # extension can be pkg, (msi, zip, 7z,)Windows tar.gz or tar.xz (win, darwin, aix and linux)
   # ARCH can be nothing (macOS universal) -x64, -arm64, (-armv7l, -s390x, -ppc64le)linux
+  # msi does not take platform, only extension and ARCH
   platform: ''
   extension: 'pkg'
   ARCH: ''
