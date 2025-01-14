@@ -1,0 +1,35 @@
+Description: |
+  Downloads the latest pkg version of Amazon Corretto JDK 21 (Amazon provides permanent links for this purpose)
+Identifier: com.github.jpiperberg.download.CorrettoJDK21-x86
+Input:
+  NAME: CorrettoJDK
+  ARCH: x86
+MinimumVersion: 2.3.0
+Process:
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-macos-jdk.pkg'
+- Processor: FlatPkgUnpacker
+  Arguments:
+    flat_pkg_path: '%pathname%'
+    destination_path: '%RECIPE_CACHE_DIR%/payload/'
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+# Get Corretto Version
+- Processor: com.github.jgstew.SharedProcessors/FileTextSearcher
+  Arguments:
+    search_path: '%RECIPE_CACHE_DIR%/payload/Distribution'
+    first_result_only: True
+    search_pattern: '(?<=CFBundleShortVersionString=")[\d|\.]*'
+    file_search_results_var: version
+- Processor: EndOfCheckPhase
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%pathname%'
+    expected_authority_names:
+      - 'Developer ID Installer: AMZN Mobile LLC (94KV3E626L)'
+      - 'Developer ID Certification Authority'
+      - 'Apple Root CA'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/payload'
