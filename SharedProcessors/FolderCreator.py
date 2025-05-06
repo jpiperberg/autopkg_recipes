@@ -42,6 +42,14 @@ class FolderCreator(FileCreator):
 				"Overwrite if a folder with the same name exists. "
 				"Defaults to False"
 			},
+		"ignore_existing": {
+			"required": False, 
+			"default": False,
+			"description": 
+				"Continue without error if the folder exists. "
+				"Will set permissions on folder if specified. "
+				"Defaults to False"
+			},
 		"folder_mode": {
 			"required": False,
 			"description": 
@@ -51,7 +59,8 @@ class FolderCreator(FileCreator):
 	}
 	output_variables = {}
 
-	def Create(self, folder_path, overwrite):
+	def Create(self, folder_path, overwrite, ignore_existing):
+		folder_exists = False
 		self.output("creating folder_path")
 		if overwrite:
 		# Delete folder if it exists.
@@ -66,19 +75,23 @@ class FolderCreator(FileCreator):
 		else:
 			self.output("will not overwrite if folder exists")
 			if os.path.islink(folder_path) or os.path.isfile(folder_path) or os.path.isdir(folder_path):
-				raise ProcessorError(f"{folder_path} exists. Exiting: {err.strerror}")
-		# Create folder_path. autopkghelper sets it to root:admin 01775.
-		self.output("creating folder folder_path")
-		try:
-			os.makedirs(folder_path)
-			
-			self.output(f"Created {folder_path}")
-		except OSError as err:
-			raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
+				if ignore_existing:
+					folder_exists = True
+				else:
+					raise ProcessorError(f"{folder_path} exists. Exiting: {err.strerror}")
+		if not folder_exists:
+			# Create folder_path. autopkghelper sets it to root:admin 01775.
+			self.output("creating folder folder_path")
+			try:
+				os.makedirs(folder_path)
+				
+				self.output(f"Created {folder_path}")
+			except OSError as err:
+				raise ProcessorError(f"Can't create {folder_path}: {err.strerror}")
 
 
 	def main(self):
-		self.Create(self.env['folder_path'], self.env['overwrite']) 
+		self.Create(self.env['folder_path'], self.env['overwrite'], self.env['ignore_existing']) 
 		if "folder_mode" in self.env:
 			try:
 				os.chmod(self.env["folder_path"], int(self.env["folder_mode"], 8))
