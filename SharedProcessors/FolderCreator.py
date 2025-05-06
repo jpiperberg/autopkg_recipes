@@ -78,7 +78,7 @@ class FolderCreator(FileCreator):
 				if ignore_existing:
 					folder_exists = True
 				else:
-					raise ProcessorError(f"{folder_path} exists. Exiting: {err.strerror}")
+					raise ProcessorError(f"{folder_path} exists. Exiting:")
 		if not folder_exists:
 			# Create folder_path. autopkghelper sets it to root:admin 01775.
 			self.output("creating folder folder_path")
