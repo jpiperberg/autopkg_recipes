@@ -1,0 +1,18 @@
+Description: |
+  Downloads the latest version of Docker for Windows
+Identifier: com.github.jpiperberg.download.Docker-Win-x86
+Input:
+  NAME: Docker
+MinimumVersion: 2.3.0
+Process:
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-win-amd6'
+- Processor: 'com.github.hansen-m.SharedProcessors/WinInstallerExtractor'
+  Arguments:
+    exe_path: '%pathname%'
+    extract_dir: 'ExeExtract'
+- Processor: PathDeleter
+  Arguments:
+    path_list:
+      - '%RECIPE_CACHE_DIR%/ExeExtract'
