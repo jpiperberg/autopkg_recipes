@@ -19,7 +19,7 @@ Process:
       Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.msi'
         prefetch_filename: True
-    - Processor: com.github.n8felton.shared/MD5Checksum
+    - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
       Arguments:
         pathname: '%pathname%'
         md5checksum: '%md5checksum%'
