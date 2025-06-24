@@ -22,7 +22,7 @@ Process:
     - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
       Arguments:
         pathname: '%pathname%'
-        md5checksum: '%md5checksum%'
+        md5checksumfile: '%md5checksum%'
     # - Processor: StopProcessingIf
     #   Arguments:
     #     predicate:
