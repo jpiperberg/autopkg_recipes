@@ -11,6 +11,7 @@ Process:
     - Processor: URLDownloader
       Arguments:
         url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-21-x64-windows-jdk.msi'
+        filename: 'amazon-corretto-21-x64-windows-jdk.msi.md5'
     - Processor: EndOfCheckPhase
       Arguments:
         md5checksum: '%pathname%'
