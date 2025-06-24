@@ -13,12 +13,23 @@ Input:
 Process:
     - Processor: URLDownloader
       Arguments:
+        url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-8-x64-windows-jre.msi'
+        filename: 'amazon-corretto-8-x64-windows-jre.msi.md5'
+    - Processor: EndOfCheckPhase
+      Arguments:
+        md5checksum: '%pathname%'
+    - Processor: URLDownloader
+      Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jre.msi'
         prefetch_filename: True
     - Processor: EndOfCheckPhase
     - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
       Arguments: 
         msi_path: '%pathname%'
+    - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
+      Arguments:
+        pathname: '%pathname%'
+        md5checksumfile: '%md5checksum%'
     - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
       Arguments:
