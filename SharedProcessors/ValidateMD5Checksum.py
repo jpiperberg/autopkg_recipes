@@ -51,7 +51,7 @@ class ValidateMD5Checksum(Processor):
     def main(self):
         md5checksum = self.md5(self.env["pathname"])
         self.output("{md5checksum}".format(md5checksum=md5checksum), 1)
-        verifiedMD5Checksum = open(self.env.get('md5checksumfile')).read()
+        verifiedMD5Checksum = open(self.env.get('md5checksumfile'), 'r').read()
         if verifiedMD5Checksum:
             if not verifiedMD5Checksum == md5checksum:
                 raise ProcessorError("MD5 Checksum verification failed.")
