@@ -10,8 +10,19 @@ Input:
 Process:
     - Processor: URLDownloader
       Arguments:
+        url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-17-x64-windows-jdk.msii'
+        filename: 'amazon-corretto-17-x64-windows-jdk.msi.md5'
+    - Processor: EndOfCheckPhase
+      Arguments:
+        md5checksum: '%pathname%'
+    - Processor: URLDownloader
+      Arguments:
         url: 'https://corretto.aws/downloads/latest/amazon-corretto-17-x64-windows-jdk.msi'
         prefetch_filename: True
+    - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
+      Arguments:
+        pathname: '%pathname%'
+        md5checksumfile: '%md5checksum%'
     - Processor: EndOfCheckPhase
     - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
     - Processor: com.github.jgstew.SharedProcessors/TextSearcher
