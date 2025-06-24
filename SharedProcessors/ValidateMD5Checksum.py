@@ -3,8 +3,7 @@
 #
 # Copyright 2016 Nathan Felton (n8felton)
 # Modified by Jamie Piperberg (jpiperberg)
-# method used does not appear to be compatible with Amazon's MD5 strategy for 
-# Corretto
+# method used takes checksum, not file
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,9 +33,9 @@ class ValidateMD5Checksum(Processor):
             "required": True,
             "description": "Path of the file to calculate MD5 checksum on."
         },
-        "md5checksum": {
+        "md5checksumfile": {
             "required": False,
-            "description": "A MD5 checksum to verify pathname."
+            "description": "A MD5 checksum file to verify pathname."
         },
     }
     output_variables = {
@@ -52,8 +51,10 @@ class ValidateMD5Checksum(Processor):
     def main(self):
         md5checksum = self.md5(self.env["pathname"])
         self.output("{md5checksum}".format(md5checksum=md5checksum), 1)
-        if self.env.get('md5checksum'):
-            if not self.env['md5checksum'] == md5checksum:
+        verifiedMD5Checksum = open(self.env.get('md5checksumfile')).read()
+        self.output("{verifiedMD5Checksum}".format(verifiedMD5Checksum=verifiedMD5Checksum, 1)
+        if verifiedMD5Checksum:
+            if not verifiedMD5Checksum == md5checksum:
                 raise ProcessorError("MD5 Checksum verification failed.")
             else:
                 self.output("MD5 Checksum Matches", 1)
