@@ -1,0 +1,35 @@
+Comment: |
+    Downloads Win MSI for CorrettoJDK 21
+    https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.msi
+Description: Downloads the latest version of the Corretto JDK21 msi
+Identifier: com.github.jpiperberg.download.CorrettoJDK21-Win
+MinimumVersion: '2.3'
+Input:
+    NAME: CorrettoJDK21-Win
+    versionRegEx: (?<=o-).+?(?=-)
+Process:
+    - Processor: URLDownloader
+      Arguments:
+        url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-21-x64-windows-jdk.msi'
+    - Processor: EndOfCheckPhase
+      Arguments:
+        md5checksum: '%pathname%'
+    - Processor: URLDownloader
+      Arguments:
+        url: 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.msi'
+        prefetch_filename: True
+    - Processor: com.github.n8felton.shared/MD5Checksum
+      Arguments:
+        pathname: '%pathname%'
+        md5checksum: '%md5checksum%'
+    # - Processor: StopProcessingIf
+    #   Arguments:
+    #     predicate:
+    - Processor: EndOfCheckPhase
+    - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
+      Arguments:
+        input_string: '%pathname%'
+        re_pattern: '%versionRegEx%'
+        result_output_var_name: version
+    
