@@ -1,60 +1,60 @@
 Comment: |
-    Downloads the latest version of Apache NetBeans.  
-    Dynamically scrapes the URL from
-    https://netbeans.apache.org/download/archive/index.html
+  Downloads the latest version of Apache NetBeans.  
+  Dynamically scrapes the URL from
+  https://netbeans.apache.org/download/archive/index.html
 Identifier: com.github.jpiperberg.download.ApacheNetBeans-Win_yaml
-MinimumVersion: '2.3'
+MinimumVersion: "2.3"
 Input:
-    NAME: ApacheNetBeans
-    BASE_URL: https://dlcdn.apache.org/netbeans/netbeans-installers/
+  NAME: ApacheNetBeans
+  BASE_URL: https://archive.apache.org/dist/netbeans/netbeans-installers/
 Process:
-    - Processor: URLTextSearcher
-      Arguments:
-        url: '%BASE_URL%'
-        re_pattern: (?<=href=\")[0-9]+\/(?=\")
-        result_output_var_name: match
-    - Processor: URLTextSearcher
-      Arguments:
-        url: '%BASE_URL%%match%'
-        re_pattern: (?<=href=\").*\.exe(?=\")
-        result_output_var_name: intermediateURL
-    - Processor: URLTextSearcher
-      Arguments:
-        url: '%BASE_URL%%match%'
-        re_pattern: (?<=ref=\").*x64\.exe\.sha512(?=\")
-        result_output_var_name: shaURL
-    - Processor: URLTextSearcher
-      Arguments:
-        url: '%BASE_URL%%match%'
-        re_pattern: (?<=installers\/)\d*(?=<\/title>)
-        result_output_var_name: majorVersion
-    - Processor: URLDownloader
-      Arguments:
-        url: '%BASE_URL%%match%%intermediateURL%'
-        filename: '%NAME%.exe'
-    - Processor: URLDownloader
-      Arguments: 
-        url: '%BASE_URL%%match%%shaURL%'
-        filename: '%NAME%.sha512'
-    - Processor: BESRelevanceProvider
-      Arguments: 
-        bes_relevance: 'preceding texts of firsts " " of lines of file "%RECIPE_CACHE_DIR%/downloads/%NAME%.sha512"'
-        output_var_name: SHA512
-    - Processor: EndOfCheckPhase
-    - Processor: io.github.hjuutilainen.SharedProcessors/ChecksumVerifier
-      Arguments:
-        pathname: '%RECIPE_CACHE_DIR%/downloads/%NAME%.exe'
-        checksum: '%SHA512%'
-        algorithm: SHA512
-    - Processor: EndOfCheckPhase
-    - Processor: com.github.hansen-m.SharedProcessors/WinInstallerExtractor
-      Arguments:
-        exe_path: '%RECIPE_CACHE_DIR%/downloads/%NAME%.exe'
-        extract_dir: ExeExtract
-    - Processor: com.github.hansen-m.SharedProcessors/BESRelevanceProvider
-      Arguments:
-        output_var_name: version
-        bes_relevance: 'preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%22" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"'
-    - Processor: StopProcessingIf
-      Arguments:
-        predicate: version == "" OR version == "None"
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%BASE_URL%"
+      re_pattern: (?<=href=\")[0-9]+\/(?=\")
+      result_output_var_name: match
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%BASE_URL%%match%"
+      re_pattern: (?<=href=\").*\.exe(?=\")
+      result_output_var_name: intermediateURL
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%BASE_URL%%match%"
+      re_pattern: (?<=ref=\").*x64\.exe\.sha512(?=\")
+      result_output_var_name: shaURL
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%BASE_URL%%match%"
+      re_pattern: (?<=installers\/)\d*(?=<\/title>)
+      result_output_var_name: majorVersion
+  - Processor: URLDownloader
+    Arguments:
+      url: "%BASE_URL%%match%%intermediateURL%"
+      filename: "%NAME%.exe"
+  - Processor: URLDownloader
+    Arguments:
+      url: "%BASE_URL%%match%%shaURL%"
+      filename: "%NAME%.sha512"
+  - Processor: BESRelevanceProvider
+    Arguments:
+      bes_relevance: 'preceding texts of firsts " " of lines of file "%RECIPE_CACHE_DIR%/downloads/%NAME%.sha512"'
+      output_var_name: SHA512
+  - Processor: EndOfCheckPhase
+  - Processor: io.github.hjuutilainen.SharedProcessors/ChecksumVerifier
+    Arguments:
+      pathname: "%RECIPE_CACHE_DIR%/downloads/%NAME%.exe"
+      checksum: "%SHA512%"
+      algorithm: SHA512
+  - Processor: EndOfCheckPhase
+  - Processor: com.github.hansen-m.SharedProcessors/WinInstallerExtractor
+    Arguments:
+      exe_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%.exe"
+      extract_dir: ExeExtract
+  - Processor: com.github.hansen-m.SharedProcessors/BESRelevanceProvider
+    Arguments:
+      output_var_name: version
+      bes_relevance: 'preceding texts of firsts "%22" of following texts of firsts " version=%22" of following texts of firsts "offset=%22" of lines of file "registry.xml" of folder "%RECIPE_CACHE_DIR%/ExeExtract/data"'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: version == "" OR version == "None"
