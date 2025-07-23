@@ -11,33 +11,38 @@ Input:
     # regardless of platform (/ or \)
     fileNameRegEx: (?:[^\\\/](?!(\\|\/)))+$
 Process:
-    - Processor: URLDownloader
-      Arguments:
-        url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-8-x64-windows-jre.msi'
-        filename: 'amazon-corretto-8-x64-windows-jre.msi.md5'
-    - Processor: EndOfCheckPhase
-      Arguments:
-        md5checksum: '%pathname%'
-    - Processor: URLDownloader
-      Arguments:
-        url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jre.msi'
-        prefetch_filename: True
-    - Processor: EndOfCheckPhase
-    - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
-      Arguments: 
-        msi_path: '%pathname%'
-    - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
-      Arguments:
-        pathname: '%pathname%'
-        md5checksumfile: '%md5checksum%'
-    - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
-    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
-      Arguments:
-        input_string: '%version%'
-        re_pattern: '%versionRegEx%'
-        result_output_var_name: buildVersion
-    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
-      Arguments:
-        input_string: '%pathname%'
-        re_pattern: '%fileNameRegEx%'
-        result_output_var_name: filename
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-8-x64-windows-jre.msi'
+    filename: 'amazon-corretto-8-x64-windows-jre.msi.md5'
+- Processor: EndOfCheckPhase
+  Arguments:
+    md5checksum: '%pathname%'
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jre.msi'
+    prefetch_filename: True
+- Processor: EndOfCheckPhase
+- Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+  Arguments: 
+    msi_path: '%pathname%'
+- Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
+  Arguments:
+    pathname: '%pathname%'
+    md5checksumfile: '%md5checksum%'
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: '%version%'
+    re_pattern: '%versionRegEx%'
+    result_output_var_name: buildVersion
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: '%pathname%'
+    re_pattern: '%fileNameRegEx%'
+    result_output_var_name: filename
+- Processor: PathDeleter
+  # delete MD5 checksum, because it will not download again if the file is there, and we are done with it
+  Arguments:
+    path_list:
+      - '%md5checksum%'

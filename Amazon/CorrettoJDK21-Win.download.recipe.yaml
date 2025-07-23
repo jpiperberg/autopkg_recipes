@@ -8,29 +8,33 @@ Input:
     NAME: CorrettoJDK21-Win
     versionRegEx: (?<=o-).+?(?=-)
 Process:
-    - Processor: URLDownloader
-      Arguments:
-        url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-21-x64-windows-jdk.msi'
-        filename: 'amazon-corretto-21-x64-windows-jdk.msi.md5'
-    - Processor: EndOfCheckPhase
-      Arguments:
-        md5checksum: '%pathname%'
-    - Processor: URLDownloader
-      Arguments:
-        url: 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.msi'
-        prefetch_filename: True
-    - Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
-      Arguments:
-        pathname: '%pathname%'
-        md5checksumfile: '%md5checksum%'
-    # - Processor: StopProcessingIf
-    #   Arguments:
-    #     predicate:
-    - Processor: EndOfCheckPhase
-    - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
-    - Processor: com.github.jgstew.SharedProcessors/TextSearcher
-      Arguments:
-        input_string: '%pathname%'
-        re_pattern: '%versionRegEx%'
-        result_output_var_name: version
-    
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://corretto.aws/downloads/latest_checksum/amazon-corretto-21-x64-windows-jdk.msi'
+    filename: 'amazon-corretto-21-x64-windows-jdk.msi.md5'
+- Processor: EndOfCheckPhase
+  Arguments:
+    md5checksum: '%pathname%'
+- Processor: URLDownloader
+  Arguments:
+    url: 'https://corretto.aws/downloads/latest/amazon-corretto-21-x64-windows-jdk.msi'
+    prefetch_filename: True
+- Processor: com.github.jpiperberg.SharedProcessors/ValidateMD5Checksum
+  Arguments:
+    pathname: '%pathname%'
+    md5checksumfile: '%md5checksum%'
+# - Processor: StopProcessingIf
+#   Arguments:
+#     predicate:
+- Processor: EndOfCheckPhase
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: '%pathname%'
+    re_pattern: '%versionRegEx%'
+    result_output_var_name: version
+- Processor: PathDeleter
+  # delete MD5 checksum, because it will not download again if the file is there, and we are done with it
+  Arguments:
+    path_list:
+      - '%md5checksum%'
