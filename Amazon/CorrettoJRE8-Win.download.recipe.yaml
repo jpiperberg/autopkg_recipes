@@ -45,4 +45,4 @@ Process:
   # delete MD5 checksum, because it will not download again if the file is there, and we are done with it
   Arguments:
     path_list:
-      - '%md5checksum%'
+      - '%md5checksumfile%'
