@@ -11,7 +11,7 @@
         <key>NAME</key>
         <string>ApacheNetBeans</string>
         <key>BASE_URL</key>
-        <string>https://dlcdn.apache.org/netbeans/netbeans-installers/</string>
+        <string>https://archive.apache.org/dist/netbeans/netbeans-installers/</string>
     </dict>
     <key>MinimumVersion</key>
     <string>1.4.0</string>
