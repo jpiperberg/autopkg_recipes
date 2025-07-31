@@ -4,6 +4,8 @@
 # Created by Jamie Piperberg (jamie.piperberg@gmail.com)
 # Based heavily on 
 # https://github.com/autopkg/hansen-m-recipes/blob/master/SharedProcessors/MSIInfoVersionProvider.py
+
+# and https://github.com/autopkg/autopkg/blob/master/Code/autopkglib/URLTextSearcher.py
 #
 # Retreives user specified table from msi file and searches with a regex for desired output
 # Requires installation of msitools, and availablility of 'msiinfo'
@@ -18,6 +20,9 @@ import platform
 import re
 
 from autopkglib import Processor, ProcessorError
+
+MATCH_MESSAGE = "Found matching text"
+NO_MATCH_MESSAGE = "No match found on URL"
 
 __all__ = ["MSIInfoTableProvider"]
 
@@ -41,13 +46,25 @@ class MSIInfoTableProvider(Processor):
             "required": True,
             "description": "regex to match",
         },
-    }
-    output_variables = {
-        "msi_property": {
+        "result_output_var_name": {
             "description": (
-                "Retrieved property info"
+                "The name of the output variable that is returned "
+                "by the match. If not specified then a default of "
+                '"match" will be used.'
             ),
+            "required": False,
+            "default": "match",
         },
+    }
+    output_variables = { 
+       "result_output_var_name": {
+          "description": (
+              "First matched sub-pattern from input found on the fetched "
+              "URL. Note the actual name of variable depends on the input "
+              'variable "result_output_var_name" or is assigned a default of '
+              '"match."'
+          )
+      }
     }
 
     __doc__ = description
@@ -90,18 +107,22 @@ class MSIInfoTableProvider(Processor):
         (stdout, stderr) = proc.communicate()
 
         read_msiinfo_table = ""
-        # self.output(stdout)
+
         regex_match = re.search(regex, stdout.decode())
-        # for line in stdout.decode().split("\n"):
-        #     if line.contains(self.env['msiinfo_property']):
-        #         read_msiinfo_property = line.split("\t")[1].strip("\r")
-        # if verbosity > 1:
-        #     if stderr:
-        #         self.output('msiinfo Errors: %s' % stderr)
-        # if read_msiinfo_property == "":
-        #     self.output("Could not find version in msi file. Please open a bug.")
-        self.env['msi_property'] = regex_match
-        self.output("Found property: %s" % (self.env['msi_property']))
+        re_match, re_group = (regex_match.group(regex_match.lastindex or 0), regex_match.groupdict())
+        output_var_name = self.env["result_output_var_name"]
+
+        # favor a named group over a normal group match
+        if output_var_name not in re_group.keys():
+            re_group[output_var_name] = re_match
+
+        self.output_variables = {}
+        for key in re_group.keys():
+            self.env[key] = re_group[key]
+            self.output(f"{MATCH_MESSAGE} ({key}): {self.env[key]}")
+            self.output_variables[key] = {
+                "description": "Matched regular expression group"
+            }
 
 if __name__ == '__main__':
     processor = MSIInfoTableProvider()
