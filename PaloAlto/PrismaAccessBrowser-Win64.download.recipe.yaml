@@ -1,0 +1,21 @@
+Comment: |
+  Downloads the latest PrismaAccessBrowser from PaloAlto Networks
+  From:
+  https://docs.paloaltonetworks.com/prisma-access-browser/deployment/deploy-prisma-access-browser#deploy-prisma-access-browser-using-workplace-one
+Identifier: com.github.jpiperberg.download.PrismaAccessBrowser-Win
+MinimumVersion: "2.3"
+Input:
+  NAME: PrismaAccessBrowser
+  COMPANY: PaloAlto Networks
+  DOWNLOAD_URL: https://installer.talon-sec.com/8c502beb44024f8582ed89b2a25501a6/PAB?os=windowsMsi
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      url: "%DOWNLOAD_URL%"
+      filename: "%NAME%.msi"
+  - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+    Arguments:
+      msi_path: '%pathname%'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: version == "" OR version == "None"
