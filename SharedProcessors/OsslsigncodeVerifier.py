@@ -80,11 +80,11 @@ class OsslsigncodeVerifier(Processor):
             self.output("Downloaded file path not found: %s" % file_path)
             sys.exit(1)
 
-        self.output("Evauluating: %s" % file_path)
+        self.output("Evaluating: %s" % file_path)
         signature = "Signature verification: ok"
         signatureCRL = "Signature CRL verification: ok"
-        signer0Regex = re.compile(self.env.get('signer_string'))
-        regex = SignerPrefix + signer0Regex
+        signer0Regex = re.compile(SignerPrefix + self.env.get('signer_string'))
+        
         if not file_path:
             self.output("file to verify not found")
             sys.exit(1)
@@ -105,7 +105,7 @@ class OsslsigncodeVerifier(Processor):
             # Failed Signature CRL, check signer
             verified = False
         
-        regex_match = re.search(regex, read_osslsigncode_response)
+        regex_match = re.search(signer0Regex, read_osslsigncode_response)
         
         if regex_match != self.env.get('signer_string'):
             # Signer Failed, exit
