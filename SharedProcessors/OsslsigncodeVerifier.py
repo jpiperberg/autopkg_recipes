@@ -100,14 +100,14 @@ class OsslsigncodeVerifier(Processor):
             # Signature failed, exit
             verified = False
             self.output("Failed to Verify Signature")
-            self.output("regex_match")
+            self.output(regex_match)
         
         regex_match = re.search(signatureCRL, read_osslsigncode_response)
         if regex_match != signatureCRL:
             # Failed Signature CRL, check signer
             verified = False
             self.output("Failed to Verify Signature CRL")
-            self.output("regex_match")
+            self.output(regex_match)
         
         regex_match = re.search(signer0Regex, read_osslsigncode_response)
         
@@ -115,7 +115,7 @@ class OsslsigncodeVerifier(Processor):
             # Signer Failed, exit
             verified = False
             self.output("Failed to verify Signer #0")
-            self.output("regex_match")
+            self.output(regex_match)
         else:
             verified = True
             self.output("Signature Verified")
