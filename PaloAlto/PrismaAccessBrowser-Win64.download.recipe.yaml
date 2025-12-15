@@ -16,10 +16,14 @@ Process:
       appcast_url: "%APPCAST_URL%"
   - Processor: URLDownloader
   - Processor: EndOfCheckPhase
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: version == "" OR version == "None"
   - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
     Arguments:
       pathname: "%pathname%"
       signer_string: '%SignerString%'
   - Processor: StopProcessingIf
     Arguments:
-      predicate: version == "" OR version == "None"
+      predicate: verified == "False" OR verified == ""
+ 
