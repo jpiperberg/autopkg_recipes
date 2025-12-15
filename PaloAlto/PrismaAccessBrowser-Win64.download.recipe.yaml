@@ -16,7 +16,7 @@ Process:
       appcast_url: "%APPCAST_URL%"
   - Processor: URLDownloader
   - Processor: EndOfCheckPhase
-  - Processor: com.github.jpiperberg.SharedProcessors/OssligncodeVerifier
+  - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
     Arguments:
       pathname: "%pathname%"
       signer_string: '%SignerString%'
