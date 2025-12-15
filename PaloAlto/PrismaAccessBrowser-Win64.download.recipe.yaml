@@ -8,15 +8,18 @@ Input:
   NAME: PrismaAccessBrowser
   COMPANY: PaloAlto Networks
   APPCAST_URL: https://bfe078e7921507bb.talon-sec.com/sparkle/PAB/offline-win/appcast.xml
+  SignerString: | # Processor uses re.compile, so copying and pasting the string that appears after "Subject" should work
+    CN=Sassafras Software\, LLC,O=Sassafras Software\, LLC,ST=New Hampshire,C=US,businessCategory=Private Organization,jurisdictionST=New Hampshire,jurisdictionC=US,serialNumber=172544
 Process:
   - Processor: SparkleUpdateInfoProvider
     Arguments:
       appcast_url: "%APPCAST_URL%"
   - Processor: URLDownloader
   - Processor: EndOfCheckPhase
-  - Processor: SignToolVerifier
+  - Processor: com.github.jpiperberg.SharedProcessors/OssigncodeVerifier
     Arguments:
-      input_path: "%pathname%"
+      pathname: "%pathname%"
+      signer_string: '%SignerString%'
   - Processor: StopProcessingIf
     Arguments:
       predicate: version == "" OR version == "None"
