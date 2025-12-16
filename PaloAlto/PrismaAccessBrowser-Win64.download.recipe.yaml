@@ -8,7 +8,7 @@ Input:
   NAME: PrismaAccessBrowser
   COMPANY: PaloAlto Networks
   APPCAST_URL: https://bfe078e7921507bb.talon-sec.com/sparkle/PAB/offline-win/appcast.xml
-  SignerString: | # Processor uses re.compile, so copying and pasting the string that appears after "Subject" should work
+  SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
     CN=Palo Alto Networks\, Inc,O=Palo Alto Networks\, Inc,L=Santa Clara,ST=California,C=US,serialNumber=3932466,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US
 Process:
   - Processor: SparkleUpdateInfoProvider
