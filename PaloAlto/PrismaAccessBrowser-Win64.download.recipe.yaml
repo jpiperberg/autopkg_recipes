@@ -25,5 +25,5 @@ Process:
       signer_string: '%SignerString%'
   - Processor: StopProcessingIf
     Arguments:
-      predicate: verified == "False" OR verified == ""
+      predicate: verified == "False" OR verified == "None"
  

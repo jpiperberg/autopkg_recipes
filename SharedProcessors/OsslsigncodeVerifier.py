@@ -83,50 +83,65 @@ class OsslsigncodeVerifier(Processor):
         self.output("Evaluating: %s" % file_path)
         signature = "Signature verification: ok"
         signatureCRL = "Signature CRL verification: ok"
-        signer0Regex = re.compile(SignerPrefix + self.env.get('signer_string'))
+        joinedString = SignerPrefix + re.escape(self.env.get('signer_string'))
+        self.output(joinedString)
         
         if not file_path:
             self.output("file to verify not found")
             sys.exit(1)
-        cmd = [osslsigncode, 'verify -in', file_path]
-        # self.output(" ".join(cmd))
+        cmd = [osslsigncode, 'verify', '-in', file_path]
+        self.output(" ".join(cmd))
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = proc.communicate()
-
         read_osslsigncode_response = stdout.decode()
-
+    
         regex_match = re.search(signature, read_osslsigncode_response)
-        if regex_match != signature:
-            # Signature failed, exit
-            verified = False
+        try:
+            if regex_match[0] != signature:
+                # Signature failed, exit
+                verified = "False"
+                self.output("Failed to Verify Signature")
+                self.output(regex_match)
+            else:
+                self.output("Signature Matched")
+        except:
+            verified = "False"
             self.output("Failed to Verify Signature")
-            self.output(regex_match)
         
         regex_match = re.search(signatureCRL, read_osslsigncode_response)
-        if regex_match != signatureCRL:
-            # Failed Signature CRL, check signer
-            verified = False
+        
+        try:
+            if regex_match[0] != signatureCRL:
+                # Failed Signature CRL, check signer
+                verified = "False"
+                self.output("Failed to Verify Signature CRL")
+                self.output(regex_match)
+            else:
+                self.output("Signature CRL Matched")
+        except:
+            verified = "False"
             self.output("Failed to Verify Signature CRL")
-            self.output(regex_match)
         
-        regex_match = re.search(signer0Regex, read_osslsigncode_response)
-        
-        if regex_match != self.env.get('signer_string'):
-            # Signer Failed, exit
-            verified = False
+        try:
+            regex_match = re.search(joinedString, read_osslsigncode_response)
+            signerMatch = re.search(re.escape(self.env.get('signer_string')), regex_match[0])
+
+            if signerMatch[0] != self.env.get('signer_string'):
+                # Signer Failed, exit
+                verified = "False"
+                self.output("Failed to verify Signer #0")
+            else:
+                verified = "True"
+                self.output("Signer Verified")
+        except:
+            verified = "False"
             self.output("Failed to verify Signer #0")
-            self.output(regex_match)
-        else:
-            verified = True
-            self.output("Signature Verified")
-        
-        if not verified:
-            self.output(read_osslsigncode_response)
+        if verified == "False":
+            self.output("Output from osslsigncodeVerifier: {0}".format(read_osslsigncode_response))
+       
 
-        self.output_variables = {}
-        self.output_variables['verified'] = verified
+        self.env["verified"] = verified
         
-
 if __name__ == '__main__':
     processor = OsslsigncodeVerifier()
     processor.execute_shell()
