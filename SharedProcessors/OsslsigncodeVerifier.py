@@ -72,7 +72,7 @@ class OsslsigncodeVerifier(Processor):
         if subprocess.call(["type", osslsigncode], stdout=subprocess.PIPE, stderr=subprocess.PIPE) != 0:
             self.output("msiinfo executable not found at %s" % osslsigncode)
             raise ProcessorError(
-                f"OsslsigncodeVerifier: osslsigncode executable not found. Need to install using `brew install opensslsigncode`"
+                f"OsslsigncodeVerifier: osslsigncode executable not found. Need to install using `brew install opensslsigncode` or download from https://github.com/mtrojnar/osslsigncode"
             )
             sys.exit(1)
 
