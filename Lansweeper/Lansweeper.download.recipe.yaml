@@ -8,7 +8,7 @@ Input:
   COMPANY: Lansweeper
   DOWNLOAD_URL: '	https://content.lansweeper.com/lsagent-mac/'
   download_regex: 'https:\/\/cdn\.lansweeper\.com\/download\/(?P<version>([0-9]+|\.)+)\/[0-9]+\/LsAgent-osx.dmg'
-  Process:
+Process:
   - Processor: URLTextSearcher
     Arguments:
       url: '%DOWNLOAD_URL%'
