@@ -1,0 +1,29 @@
+Comment: |
+  Downloads the latest Lansweeper installer
+ 
+Identifier: com.github.jpiperberg.download.Lansweeper
+MinimumVersion: "2.3"
+Input:
+  NAME: Lansweeper
+  COMPANY: Lansweeper
+  DOWNLOAD_URL: '	https://content.lansweeper.com/lsagent-mac/'
+  download_regex: '(?P<url>https:\/\/cdn\.lansweeper\.com\/download\/(?P<version>([0-9]+|\.)+)\/[0-9]+\/LsAgent-osx.dmg'
+  Process:
+  - Processor: URLTextSearcher
+    Arguments:
+      url: '%DOWNLOAD_URL%'
+      re_pattern: 'download_regex'
+      request_headers:
+        user-agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0"
+    result_output_var_name: archive_url
+  - Processor: URLDownloader
+    Arguments:
+      url: '%url%'
+  - Processor: EndOfCheckPhase
+  - Processor: StopProcessingIf
+    Argumens:
+      predicate: download_changed == FALSE
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: version == "" OR version == "None"
+  
