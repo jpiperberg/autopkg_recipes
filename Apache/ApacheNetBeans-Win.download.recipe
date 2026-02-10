@@ -111,7 +111,7 @@
 			<string>io.github.hjuutilainen.SharedProcessors/ChecksumVerifier</string>   
 			<key>Arguments</key>   
 			<dict>   
-				<key>pathname</key>   
+				<key>checksum_pathname</key>   
 				<string>%RECIPE_CACHE_DIR%/downloads/%NAME%.exe</string>
 				<key>checksum</key>
 				<string>%SHA512%</string>
