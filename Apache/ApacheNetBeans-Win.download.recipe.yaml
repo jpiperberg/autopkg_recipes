@@ -43,7 +43,7 @@ Process:
   - Processor: EndOfCheckPhase
   - Processor: io.github.hjuutilainen.SharedProcessors/ChecksumVerifier
     Arguments:
-      pathname: "%RECIPE_CACHE_DIR%/downloads/%NAME%.exe"
+      checksum_pathname: "%RECIPE_CACHE_DIR%/downloads/%NAME%.exe"
       checksum: "%SHA512%"
       algorithm: SHA512
   - Processor: EndOfCheckPhase
