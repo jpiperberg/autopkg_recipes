@@ -1,24 +1,35 @@
 Comment: |
   Downloads the latest Offline PrismaAccessBrowser from PaloAlto Networks
   From:
-  https://docs.paloaltonetworks.com/prisma-access-browser/deployment/prisma-access-browser-update-mechanics
+  https://docs.paloaltonetworks.com/prisma-access-browser/deployment/prisma-access-browser-update-mechanics#windows-deployment
 Identifier: com.github.jpiperberg.download.PrismaAccessBrowser-Win64
 MinimumVersion: "2.3"
 Input:
   NAME: PrismaAccessBrowser
   COMPANY: PaloAlto Networks
-  APPCAST_URL: https://bfe078e7921507bb.talon-sec.com/sparkle/PAB/offline-win/appcast.xml
+  version_predicate: version == "" OR version == "None"
+  ARCH: x64
+  # pass arm64 in child recipe to get arm windows download
+  SEARCH_URL: "https://releases.talon-sec.com/api/v1/latest?appid=%7Bdfef2477-4f0e-454b-bc0d-03ce61074e4c%7D&platform=win&architecture=%ARCH%&channel=packaged&redirect=false"
+  # APPCAST_URL: https://bfe078e7921507bb.talon-sec.com/sparkle/PAB/offline-win/appcast.xml
   SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
     CN=Palo Alto Networks\, Inc,O=Palo Alto Networks\, Inc,L=Santa Clara,ST=California,C=US,serialNumber=3932466,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US
 Process:
-  - Processor: SparkleUpdateInfoProvider
+  # - Processor: SparkleUpdateInfoProvider
+  #   Arguments:
+  #     appcast_url: "%APPCAST_URL%"
+  - Processor: URLTextSearcher
     Arguments:
-      appcast_url: "%APPCAST_URL%"
+      url: "%SEARCH_URL%"
+      re_pattern: (?P<msi_url>https:\/\/.*\/(?P<architecture>[a-zA-Z]+64)\/.*-(?P<version>(\d+\.)+\d+)-.*\.msi)
   - Processor: URLDownloader
+    Arguments:
+      url: '%msi_url%'
+      filename: 'PrismaAccessBrowser-%architecture%-%version%.msi'
   - Processor: EndOfCheckPhase
   - Processor: StopProcessingIf
     Arguments:
-      predicate: version == "" OR version == "None"
+      predicate: "%version_predicate%"
   - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
     Arguments:
       pathname: "%pathname%"
