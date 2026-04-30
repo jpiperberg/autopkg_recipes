@@ -1,0 +1,34 @@
+Comment: |
+  Downloads the latest Offline PrismaAccessBrowser pkg installer from PaloAlto Networks
+  
+Identifier: com.github.jpiperberg.download.PrismaAccessBrowser-macOS
+MinimumVersion: "2.3"
+Input:
+  NAME: PrismaAccessBrowser
+  COMPANY: PaloAlto Networks
+  version_predicate: version == "" OR version == "None"
+  ARCH: universal # pass "arm64" to get Apple Silicon package
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      url: "https://release-manager.us.gs.talon-sec.com/api/v1/latest?appid=%7Bdfef2477-4f0e-454b-bc0d-03ce61074e4c%7D&platform=mac&architecture=%ARCH%&channel=packaged&redirect=true"
+      filename: "%NAME%-%ARCH%.pkg"
+  - Processor: FlatPkgUnpacker
+    Arguments:
+      flat_pkg_path: "%pathname%"
+      skip_payload: true
+      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/"
+  - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+  - Processor: com.github.jgstew.SharedProcessors/FileTextSearcher
+    Arguments:
+      search_path: "%RECIPE_CACHE_DIR%/pkgroot/PackageInfo"
+      first_result_only: True
+      search_pattern: '(?<=Prisma Access Browser\.app" id="com\.talon-sec\.Work\" CFBundleShortVersionString=\")(?P<version>[\d|\.]+)'
+      file_search_results_var: 'version'
+  - Processor: FileMover
+    Arguments: 
+      source: "%pathname%"
+      target: "%RECIPE_CACHE_DIR%/downloads/%NAME%-%ARCH%-%version%.pkg"
+  - Processor: EndOfCheckPhase
+    Arguments:
+      pathname: "%target%"
