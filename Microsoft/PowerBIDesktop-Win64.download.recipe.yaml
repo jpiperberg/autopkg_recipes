@@ -1,0 +1,42 @@
+Comment: |
+  Downloads the latest Offline Microsoft Power BI Desktop Installer
+  From:
+  https://www.microsoft.com/en-us/download/details.aspx?id=58494
+Identifier: com.github.jpiperberg.download.PowerBIDesktop-Win64
+MinimumVersion: "2.3"
+Input:
+  NAME: PowerBIDesktop
+  COMPANY: Microsoft
+  version_predicate: version == "" OR version == "None"
+  ARCH: x64
+  SEARCH_URL: "https://www.microsoft.com/en-us/download/details.aspx?id=58494"
+  SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
+    CN=Microsoft Corporation,O=Microsoft Corporation,L=Redmond,ST=Washington,C=US
+Process:
+  # - Processor: SparkleUpdateInfoProvider
+  #   Arguments:
+  #     appcast_url: "%APPCAST_URL%"
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%SEARCH_URL%"
+      re_pattern: (?<=version\":\")(?P<version>(\d+\.)+\d+)
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%SEARCH_URL%"
+      re_pattern: (?P<exe_url>https:\/\/download\.microsoft\.com\/download\/\d+\/\d+\/\d+\/[0123456789abcdef-]+\/PBIDesktopSetup_x64\.exe)
+  - Processor: URLDownloader
+    Arguments:
+      url: '%exe_url%'
+      filename: "%NAME%-%version%.exe"
+  - Processor: EndOfCheckPhase
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: "%version_predicate%"
+  - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+    Arguments:
+      pathname: "%pathname%"
+      signer_string: '%SignerString%'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: verified == "False" OR verified == "None"
+ 
