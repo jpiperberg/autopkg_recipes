@@ -1,0 +1,44 @@
+Comment: |
+  Downloads the latest Thunderbird MSI.  pass "" to CHANNEL for release or "esr" for esr
+  From:
+  https://docs.paloaltonetworks.com/prisma-access-browser/deployment/prisma-access-browser-update-mechanics#windows-deployment
+Identifier: com.github.jpiperberg.download.Thunderbird-Win64-MSI
+MinimumVersion: "2.3"
+Input:
+  NAME: Thunderbird
+  COMPANY: Mozilla
+  CHANNEL: ""
+  version_predicate: version == "" OR version == "None"
+  ARCH: x64
+  SEARCH_URL: "https://www.thunderbird.net/en-US/thunderbird/releases/"
+  SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
+    CN=Mozilla Corporation,OU=Firefox Engineering Operations,O=Mozilla Corporation,L=San Francisco,ST=California,C=US
+Process:
+  - Processor: URLTextSearcher
+    Arguments:
+      url: "%SEARCH_URL%"
+      re_pattern: (https:\/\/download.mozilla.org\/\?product=thunderbird-(?P<version>\d+\.[\d+|\.]+)%CHANNEL%-msi-SSL&os=win64&lang=en-US)
+      result_output_var_name: msi_url
+  - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+  - Processor: com.github.jgstew.SharedProcessors/TextSearcher
+    Arguments:
+      input_string: "%msi_url%"
+      first_result_only: True
+      search_pattern: '((\d+\.[\d+|\.]+)'
+      file_search_results_var: 'version'
+  - Processor: URLDownloader
+    Arguments:
+      url: '%msi_url%'
+      filename: '%COMPANY%-%NAME%-%CHANNEL%-%version%.msi'
+  - Processor: EndOfCheckPhase
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: "%version_predicate%"
+  - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+    Arguments:
+      pathname: "%pathname%"
+      signer_string: '%SignerString%'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: verified == "False" OR verified == "None"
+ 
