@@ -12,6 +12,7 @@ Input:
   SEARCH_URL: "https://www.microsoft.com/en-us/download/details.aspx?id=58494"
   SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
     CN=Microsoft Corporation,O=Microsoft Corporation,L=Redmond,ST=Washington,C=US
+  USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0'
 Process:
   # - Processor: SparkleUpdateInfoProvider
   #   Arguments:
@@ -19,10 +20,14 @@ Process:
   - Processor: URLTextSearcher
     Arguments:
       url: "%SEARCH_URL%"
+      request_headers:
+        user-agent: '%USER_AGENT%'
       re_pattern: (?<=version\":\")(?P<version>(\d+\.)+\d+)
   - Processor: URLTextSearcher
     Arguments:
       url: "%SEARCH_URL%"
+      request_headers:
+        user-agent: '%USER_AGENT%'
       re_pattern: (?P<exe_url>https:\/\/download\.microsoft\.com\/download\/\d+\/\d+\/\d+\/[0123456789abcdef-]+\/PBIDesktopSetup_x64\.exe)
   - Processor: URLDownloader
     Arguments:

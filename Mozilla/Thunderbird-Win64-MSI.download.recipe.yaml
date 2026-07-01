@@ -29,7 +29,7 @@ Process:
   - Processor: URLDownloader
     Arguments:
       url: '%msi_url%'
-      filename: '%COMPANY%-%NAME%-%CHANNEL%-%version%.msi'
+      filename: '%COMPANY%-%NAME%x64-%CHANNEL%-%version%.msi'
   - Processor: EndOfCheckPhase
   - Processor: StopProcessingIf
     Arguments:
