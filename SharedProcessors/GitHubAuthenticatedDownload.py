@@ -178,7 +178,7 @@ class GitHubAuthenticatedDownload(URLDownloader):
             'X-GitHub-Api-Version': '2026-03-10',
         }
 
-        result = requests.post('https://api.github.com/app/installations/119192899/access_tokens', headers=headers)
+        result = requests.post('https://api.github.com/app/installations/{0}/access_tokens'.format(self.env['installation_ID']), headers=headers)
         
         error = result.raise_for_status()
         if error:  
