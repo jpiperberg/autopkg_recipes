@@ -47,7 +47,7 @@ class StopProcessingIfPathExists(StopProcessingIf):
             path_exists = True
         else:
             path_exists = False
-        return result
+        return path_exists
 
     def main(self) -> None:
         self.env["stop_processing_recipe"] = self.path_exists(
