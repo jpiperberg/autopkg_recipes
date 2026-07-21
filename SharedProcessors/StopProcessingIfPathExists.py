@@ -18,11 +18,6 @@
 from autopkglib import Processor, ProcessorError, log_err, StopProcessingIf
 import os
 
-try:
-    from Foundation import NSPredicate
-except ImportError:
-    log_err("WARNING: Failed 'from Foundation import NSPredicate' in " + __name__)
-
 __all__ = ["StopProcessingIfPathExists"]
 
 
@@ -31,7 +26,7 @@ class StopProcessingIfPathExists(StopProcessingIf):
     file/folder path exists."""
 
     description = __doc__
-    lifecycle = {"introduced": "2.7.6}
+    lifecycle = {"introduced": "2.7.6"}
     input_variables = {
         "path_to_test": {
             "required": True,
@@ -48,10 +43,10 @@ class StopProcessingIfPathExists(StopProcessingIf):
 
     def path_exists(self, path_to_test):
         """Tests file/folder path"""
-        if os.path.islink(path_to_test) or os.path.isfile(path_to_test) or os.path.isdir(path_to_test):
-					path_exists = True
-				else:
-          path_exists = False
+        if (os.path.islink(path_to_test) or os.path.isfile(path_to_test) or os.path.isdir(path_to_test)):
+            path_exists = True
+        else:
+            path_exists = False
         return result
 
     def main(self) -> None:
