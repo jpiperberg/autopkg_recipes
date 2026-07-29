@@ -195,7 +195,7 @@ class GitHubAuthenticatedDownload(URLDownloader):
         self.output(token)
         headers = {
             "Accept": "application/vnd.github.raw+json",
-            "Authorization": "Bearer {0}".format(token),
+            "Authorization": "Token {0}".format(token),
             "X-GitHub-Api-Version": "2026-03-10"
         }
         self.add_curl_headers(curl_cmd, headers)
