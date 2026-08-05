@@ -50,7 +50,7 @@ class ValidateSHA256Checksum(Processor):
 
     def main(self):
         sha256_checksum = self.sha256(self.env["pathname"])
-        self.output("{sha256_checksum}".format(sha256_checksum=sha256_checksum), 1)
+        self.output("SHA256 of {filename} is {sha256_checksum}".format(filename=self.env["pathname"],sha256_checksum=sha256_checksum), 1)
         verifiedSHA256Checksum = self.env.get('sha256_string')
         if verifiedSHA256Checksum:
             if not verifiedSHA256Checksum == sha256_checksum:

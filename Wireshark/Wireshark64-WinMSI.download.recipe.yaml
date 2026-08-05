@@ -1,0 +1,51 @@
+Comment: |
+  Downloads the latest version of Wireshark MSI.(borrows from com.github.rustymyers.download.Wireshark-Win)
+Identifier: com.github.jpiperberg.download.Wireshark64-WinMSI
+MinimumVersion: 2.7.6
+
+Input:
+  NAME: Wireshark64-Win
+  version_predicate: version == "" OR version == "None"
+
+Process:
+  - Processor: URLTextSearcher
+    Arguments:
+      re_flags:
+        - IGNORECASE
+      re_pattern: (https:\/\/[^"]*win64/Wireshark-(?P<version>[0-9]{1,4}.{1,4})-x64\.exe)
+      url: https://www.wireshark.org/download.html
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%.msi"
+      url: "https://www.wireshark.org/download/win64/Wireshark-%version%-x64.msi"
+  - Processor: EndOfCheckPhase
+    Arguments:
+      installer_path: "%pathname%"
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%_signatures.txt"
+      url: "https://www.wireshark.org/download/SIGNATURES-%version%.txt"
+
+  - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+  - Processor: com.github.jgstew.SharedProcessors/FileTextSearcher
+    Arguments:
+      search_path: "%pathname%"
+      first_result_only: True
+      search_pattern: '(?<=SHA256\(Wireshark-%version%-x64\.msi\)=)([A-Za-z0-9]+)'
+      file_search_results_var: sha256_string
+
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: "%version_predicate%"
+  - Processor: EndOfCheckPhase
+    Arguments:
+      pathname: "%installer_path%"
+  - Processor: com.github.jpiperberg.SharedProcessors/ValidateSHA256Checksum
+    Arguments:
+      pathname: "%pathname%"
+      sha256_string: "%sha256_string%"
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: verified == "False" OR verified == "None"
+  
+

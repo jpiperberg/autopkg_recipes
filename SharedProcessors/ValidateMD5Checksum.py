@@ -22,7 +22,7 @@ import hashlib
 
 from autopkglib import Processor, ProcessorError
 
-__all__ = ["MD5Checksum"]
+__all__ = ["ValidateMD5Checksum"]
 
 
 class ValidateMD5Checksum(Processor):
@@ -60,5 +60,5 @@ class ValidateMD5Checksum(Processor):
         self.env["md5checksum"] = md5checksum
 
 if __name__ == "__main__":
-    PROCESSOR = MD5Checksum()
+    PROCESSOR = ValidateMD5Checksum()
     PROCESSOR.execute_shell()
