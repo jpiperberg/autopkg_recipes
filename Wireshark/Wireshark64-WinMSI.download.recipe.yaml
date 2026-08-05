@@ -25,7 +25,6 @@ Process:
     Arguments:
       filename: "%NAME%_signatures.txt"
       url: "https://www.wireshark.org/download/SIGNATURES-%version%.txt"
-
   - Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
   - Processor: com.github.jgstew.SharedProcessors/FileTextSearcher
     Arguments:
@@ -33,10 +32,13 @@ Process:
       first_result_only: True
       search_pattern: '(?<=SHA256\(Wireshark-%version%-x64\.msi\)=)([A-Za-z0-9]+)'
       file_search_results_var: sha256_string
-
   - Processor: StopProcessingIf
     Arguments:
       predicate: "%version_predicate%"
+  - Processor: PathDeleter
+    Arguments:
+      path_list:
+        - "%pathname%"
   - Processor: EndOfCheckPhase
     Arguments:
       pathname: "%installer_path%"
