@@ -1,0 +1,29 @@
+Description: Downloads the latest version of Notepad++ for Windows.
+Identifier: com.github.jpiperberg.download.NotepadPlusPlus-Win
+Input:
+  NAME: Notepad++
+  GITHUB_REPO: notepad-plus-plus/notepad-plus-plus
+  ARCH: x64 # pass arm64 for apple silicon build
+MinimumVersion: 2.7.9
+Process:
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    github_repo: "%GITHUB_REPO%"
+    asset_regex: 'npp.([0-9]{1,3}\.){1,3}[0-9]{1,3}.Installer.%ARCH%.exe'
+- Processor: URLDownloader
+  Arguments:
+    url: "%url%"
+    filename: "%NAME%-%ARCH%.exe"
+- Processor: EndOfCheckPhase
+- Processor: com.github.jgstew.SharedProcessors/SharedUtilityMethods
+- Processor: com.github.jgstew.SharedProcessors/TextSearcher
+  Arguments:
+    input_string: "%release_notes%"
+    re_pattern: '([a-f0-9]+)(?=  npp\.(?:[0-9]{1,3}\.){1,3}[0-9]{1,3}\.Installer\.%ARCH%\.exe)'
+    result_output_var_name: SHA256
+- Processor: com.github.jpiperberg.SharedProcessors/ValidateSHA256Checksum
+  Arguments:
+    sha256_string: '%SHA256%'
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: version == "" OR version == "None"
