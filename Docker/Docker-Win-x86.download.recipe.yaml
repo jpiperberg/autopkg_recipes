@@ -12,7 +12,7 @@ Process:
     filename: '%NAME%-%ARCH%.exe'
 - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
   Arguments:
-    pathname: '%pathname'
+    pathname: '%pathname%'
     signer_string: 'CN=Docker Inc,O=Docker Inc,L=Palo Alto,ST=California,C=US,serialNumber=4817464,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US'
 - Processor: 'com.github.hansen-m.SharedProcessors/WinInstallerExtractor'
   Arguments:
