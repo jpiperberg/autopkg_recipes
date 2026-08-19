@@ -3,7 +3,7 @@ Identifier: com.github.jpiperberg.download.NotepadPlusPlus-Win
 Input:
   NAME: Notepad++
   GITHUB_REPO: notepad-plus-plus/notepad-plus-plus
-  ARCH: x64 # pass arm64 for apple silicon build
+  ARCH: x64 # pass arm64 for arm build
 MinimumVersion: 2.7.9
 Process:
 - Processor: GitHubReleasesInfoProvider
