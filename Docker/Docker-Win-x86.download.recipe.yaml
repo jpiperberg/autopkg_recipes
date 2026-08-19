@@ -8,11 +8,12 @@ MinimumVersion: 2.3.0
 Process:
 - Processor: URLDownloader
   Arguments:
-    url: 'https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-win-%ARCH%'
+    url: 'https://desktop.docker.com/win/main/%ARCH%/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-win-%ARCH%'
     filename: '%NAME%-%ARCH%.exe'
-- Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier.py
+- Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
   Arguments:
-    signer_string: 'CN=Docker Inc,O=Docker Inc,L=Palo Alto,ST=California,C=US,serialNumber=4817464,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US
+    pathname: '%pathname'
+    signer_string: 'CN=Docker Inc,O=Docker Inc,L=Palo Alto,ST=California,C=US,serialNumber=4817464,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US'
 - Processor: 'com.github.hansen-m.SharedProcessors/WinInstallerExtractor'
   Arguments:
     exe_path: '%pathname%'
