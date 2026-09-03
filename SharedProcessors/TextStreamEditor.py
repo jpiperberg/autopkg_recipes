@@ -20,7 +20,7 @@
 
 import re
 import subprocess
-from autopkglib import ProcessorError
+from autopkglib import ProcessorError, Processor
 
 MATCH_MESSAGE = "Found matching text"
 NO_MATCH_MESSAGE = "No match found on text"
