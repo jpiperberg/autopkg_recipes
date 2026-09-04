@@ -21,7 +21,7 @@
 import glob
 import os.path
 
-from autopkglib import ProcessorError
+from autopkglib import ProcessorError, Processor
 
 __all__ = ["FileTextReader"]
 
