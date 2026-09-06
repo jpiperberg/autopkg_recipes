@@ -1,0 +1,59 @@
+Comment: |
+    Downloads Adobe Reader update
+    https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC
+Description: Downloads the Update packages for Adobe Reader (pathname is 64 bit, pathname_32bit is 32 bit)
+Identifier: com.github.jpiperberg.download.AdobeReaderUpdate-Win
+MinimumVersion: '2.3'
+Input:
+    NAME: Adobe Reader Patch
+    regex: '(?P<version_url>continuous[a-z0-9\.#\/]+)(?:\"><.*\">)(?P<version>\d{2}\.\d{3}\.\d{4,}) (?:Planned update|Out of cycle update)'
+    BASE_DOWNLOAD_URL: https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC
+    signer_string: "CN=Adobe Inc.,OU=Acrobat DC,O=Adobe Inc.,L=San Jose,ST=ca,C=US,serialNumber=2748129,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US"
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    url: '%BASE_DOWNLOAD_URL%'
+    re_pattern: "%regex%"
+    result_output_var_name: match
+- Processor: com.github.jpiperberg.SharedProcessors/TextStreamEditor
+  Arguments:
+    source_string: "%version%"
+    sed_expression: 's/\.//g'
+    result_output_var_name: combined_version
+# 32 bit
+- Processor: URLTextSearcher
+  Arguments:
+    url: '%BASE_DOWNLOAD_URL%/%version_url%'
+    re_pattern: 'https:\/\/.*AcroRdrDCUpd%combined_version%\.msp(?=\")'
+    result_output_var_name: download_url
+- Processor: URLDownloader
+  Arguments:
+    url: '%download_url%'
+    prefetch_filename: True
+- Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+  Arguments:
+    pathname: '%pathname%'
+    signer_string: '%signer_string%'
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: verified == "False" OR verified == "None"
+- Processor: EndOfCheckPhase
+  Arguuments:
+    pathname_32bit: "%pathname%"
+# 64 bit
+- Processor: URLTextSearcher
+  Arguments:
+    url: '%BASE_DOWNLOAD_URL%/%version_url%'
+    re_pattern: 'https:\/\/.*AcroRdrDCx64Upd%combined_version%\.msp(?=\")'
+    result_output_var_name: download_url
+- Processor: URLDownloader
+  Arguments:
+    url: '%download_url%'
+    prefetch_filename: True
+- Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+  Arguments:
+    pathname: '%pathname%'
+    signer_string: '%signer_string%'
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: verified == "False" OR verified == "None"
