@@ -39,7 +39,7 @@ Process:
     predicate: verified == "False" OR verified == "None"
 - Processor: EndOfCheckPhase
   Arguuments:
-    pathname_32bit: "%pathname%"
+    32bit_pathname: "%pathname%"
 # 64 bit
 - Processor: URLTextSearcher
   Arguments:
