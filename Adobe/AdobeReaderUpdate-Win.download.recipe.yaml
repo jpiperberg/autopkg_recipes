@@ -37,7 +37,7 @@ Process:
 - Processor: StopProcessingIf
   Arguments:
     predicate: verified == "False" OR verified == "None"
-- Processor: EndOfCheckPhase
+- Processor: com.github.rtrouton.SharedProcessors/VariablePlaceholder
   Arguments:
     pathname_32bit: "%pathname%"
 # 64 bit
