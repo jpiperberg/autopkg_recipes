@@ -27,9 +27,9 @@ from autopkglib import ProcessorError
 import subprocess
 
 
-__all__ = ["createWIMProvider"]
+__all__ = ["CreateWIMProvider"]
 
-class createWIMProvider(Processor):
+class CreateWIMProvider(Processor):
   description = ("Creates an WIM from source_path")
   input_variables = {
     "source_path": {
@@ -259,5 +259,5 @@ def main(self):
     self.validate_wims(self,source_path, f"{destination_wim}.wim")
 
 if __name__ == '__main__':
-    processor = createWIMProvider()
+    processor = CreateWIMProvider()
     processor.execute_shell()
