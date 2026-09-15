@@ -171,92 +171,92 @@ class CreateWIMProvider(Processor):
     )
     self.output(f"Wiminfo result: {result.stdout}")
 
-def main(self):
-  source_path = self.env["source_path"]
-  RECIPE_CACHE_DIR = self.env.get("RECIPE_CACHE_DIR")
-  version = self.env.get("version")
-  extension = "wim"
-  volume_name = self.env["volume_name"]
-  volume_descripton = self.env["volume_descripton"]
-  validate = self.env["validate"]
-  wim_name = self.env["wim_name"]
+  def main(self):
+    source_path = self.env["source_path"]
+    RECIPE_CACHE_DIR = self.env.get("RECIPE_CACHE_DIR")
+    version = self.env.get("version")
+    extension = "wim"
+    volume_name = self.env["volume_name"]
+    volume_descripton = self.env["volume_descripton"]
+    validate = self.env["validate"]
+    wim_name = self.env["wim_name"]
 
-  if not os.path.exists(source_path):
-    raise ProcessorError(f"Source path{source_path} does not exist")
+    if not os.path.exists(source_path):
+      raise ProcessorError(f"Source path{source_path} does not exist")
 
-  # Check for presence of wimlib
-  result = subprocess.run(
-    [
-      "which",
-      "wimcapture",
-    ],
-    capture_output=True,
-    text=True
-  )
-  if result.stdout.find("not found") < 0:
-    raise ProcessorError(f"wimlib not installed, please run 'brew install wimlib'")
-
-  if len(wim_name) == 0:
-    # Set name from Source Path
-    name = "{0}-{1}".format(os.path.basename(source_path), version)
-    self.output("name: {0}".format(name))
-  else:
-    name = wim_name
-    self.output("name: {0}".format(name))
-  # Default destination_path
-  if len(volume_name) == 0:
-    volume_name = os.path.basename(source_path)[:8]
-      
-  if len(volume_descripton) == 0:
-    volume_descripton = wim_name
-  destination_name = "{0}.{1}".format(name, extension)
-  destination_wim = "{0}/{1}".format(RECIPE_CACHE_DIR, destination_name)
-  if self.env.get("destination_path"):
-    destination_path = self.env.get("destination_path")
-    self.output("Using provided destination_path value")
-    destination_wim = "{0}{1}.{2}".format(destination_path, destination_name, extension)
-  
-  if self.env.get("overwrite"):
-    overwrite = self.env.get("overwrite")
-  else:
-    overwrite = True
-
-  try:
-    matches = glob.glob(source_path, recursive=True)
-    if len(matches) == 0:
-      raise ProcessorError(
-          f"Error processing path '{source_path}' with glob."
-      )
-    matched_source_path = matches[0]
-    if len(matches) > 1:
-      self.output(
-        f"WARNING: Multiple paths match 'source_path' glob '{source_path}':"
-      )
-      for match in matches:
-        self.output(f"  - {match}")
-    if [c for c in "*?[]!" if c in source_path]:
-      self.output(
-        f"Using path '{matched_source_path}' matched from "
-        f"globbed '{source_path}'."
-      )
-    self.output(
-      f"Using source path: '{source_path}'\n"
-      f"WIM path:  '{destination_wim}'\n"
-      f"Overwrite: '{overwrite}'"
+    # Check for presence of wimlib
+    result = subprocess.run(
+      [
+        "which",
+        "wimcapture",
+      ],
+      capture_output=True,
+      text=True
     )
-    # Create WIM and set path
-    self.createWIM(
-      source_path,
-      destination_wim,
-      volume_name,
-      volume_descripton,
-      overwrite)
-    self.env["wim_path"] = destination_wim
-  except:
-    raise ProcessorError(f"Error creating wim from {source_path} to {destination_wim}.wim")
+    if result.stdout.find("not found") < 0:
+      raise ProcessorError(f"wimlib not installed, please run 'brew install wimlib'")
 
-  if self.env.get["validate"]:
-    self.validate_wims(self,source_path, f"{destination_wim}.wim")
+    if len(wim_name) == 0:
+      # Set name from Source Path
+      name = "{0}-{1}".format(os.path.basename(source_path), version)
+      self.output("name: {0}".format(name))
+    else:
+      name = wim_name
+      self.output("name: {0}".format(name))
+    # Default destination_path
+    if len(volume_name) == 0:
+      volume_name = os.path.basename(source_path)[:8]
+        
+    if len(volume_descripton) == 0:
+      volume_descripton = wim_name
+    destination_name = "{0}.{1}".format(name, extension)
+    destination_wim = "{0}/{1}".format(RECIPE_CACHE_DIR, destination_name)
+    if self.env.get("destination_path"):
+      destination_path = self.env.get("destination_path")
+      self.output("Using provided destination_path value")
+      destination_wim = "{0}{1}.{2}".format(destination_path, destination_name, extension)
+    
+    if self.env.get("overwrite"):
+      overwrite = self.env.get("overwrite")
+    else:
+      overwrite = True
+
+    try:
+      matches = glob.glob(source_path, recursive=True)
+      if len(matches) == 0:
+        raise ProcessorError(
+            f"Error processing path '{source_path}' with glob."
+        )
+      matched_source_path = matches[0]
+      if len(matches) > 1:
+        self.output(
+          f"WARNING: Multiple paths match 'source_path' glob '{source_path}':"
+        )
+        for match in matches:
+          self.output(f"  - {match}")
+      if [c for c in "*?[]!" if c in source_path]:
+        self.output(
+          f"Using path '{matched_source_path}' matched from "
+          f"globbed '{source_path}'."
+        )
+      self.output(
+        f"Using source path: '{source_path}'\n"
+        f"WIM path:  '{destination_wim}'\n"
+        f"Overwrite: '{overwrite}'"
+      )
+      # Create WIM and set path
+      self.createWIM(
+        source_path,
+        destination_wim,
+        volume_name,
+        volume_descripton,
+        overwrite)
+      self.env["wim_path"] = f"{destination_wim}.wim"
+    except:
+      raise ProcessorError(f"Error creating wim from {source_path} to {destination_wim}.wim")
+
+    if self.env.get["validate"]:
+      self.validate_wim(self,source_path, f"{destination_wim}.wim")
 
 if __name__ == '__main__':
     processor = CreateWIMProvider()
