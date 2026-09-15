@@ -43,7 +43,7 @@ class createWIMProvider(DmgMounter):
       "description": ("Destination Path for WIM. Should be a folder. ")
     },
     "wim_name": {
-      "required": False
+      "required": False,
       "description": ("Name for the wim (without .wim), defaults to basename of source_path"),
       "default": ""
     },
