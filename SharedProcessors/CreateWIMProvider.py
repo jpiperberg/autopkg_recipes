@@ -29,7 +29,7 @@ import subprocess
 
 __all__ = ["createWIMProvider"]
 
-class createWIMProvider(DmgMounter):
+class createWIMProvider(Processor):
   description = ("Creates an WIM from source_path")
   input_variables = {
     "source_path": {
