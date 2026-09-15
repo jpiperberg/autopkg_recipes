@@ -23,7 +23,7 @@
 
 import os
 import glob
-from autopkglib import ProcessorError
+from autopkglib import ProcessorError, Processor
 import subprocess
 
 
