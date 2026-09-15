@@ -42,6 +42,11 @@ class createWIMProvider(DmgMounter):
       "required": True,
       "description": ("Destination Path for WIM. Should be a folder. ")
     },
+    "wim_name": {
+      "required": False
+      "description": ("Name for the wim (without .wim), defaults to basename of source_path"),
+      "default": ""
+    },
     "overwrite": {
       "required": False,
       "description": ("Defaults to True. Boolean to overwrite WIM if it already exists."),
@@ -54,12 +59,12 @@ class createWIMProvider(DmgMounter):
     },
     "volume_name": {
       "required": False,
-      "description": ("Defaults to first 8 of destination_path. Limited to 8 characters"),
+      "description": ("Defaults to first 8 of destination_path basename. Limited to 8 characters"),
       "default": "" # set in main
     },
     "volume_descripton": {
       "required": False,
-      "description": ("Defaults to volume_name"),
+      "description": ("Defaults to wim_name"),
       "default": "" # set in main
     },
     "compression_type": {
@@ -138,7 +143,7 @@ class createWIMProvider(DmgMounter):
       self.output("No old wim")
 
     if len(volume_name) > 0:
-        VOLUME_NAME = volume_name
+        VOLUME_NAME = volume_name[:8]
     else:
         VOLUME_NAME = os.path.basename(source_path)[:8]	
     self.output("VOLUME_NAME: {0}".format(VOLUME_NAME))
@@ -174,6 +179,7 @@ def main(self):
   volume_name = self.env["volume_name"]
   volume_descripton = self.env["volume_descripton"]
   validate = self.env["validate"]
+  wim_name = self.env["wim_name"]
 
   if not os.path.exists(source_path):
     raise ProcessorError(f"Source path{source_path} does not exist")
@@ -189,25 +195,31 @@ def main(self):
   )
   if result.stdout.find("not found") < 0:
     raise ProcessorError(f"wimlib not installed, please run 'brew install wimlib'")
-  # Set name from Source Path
-  name = os.path.basename(source_path)
-  self.output("name: {0}".format(name))
+
+  if len(wim_name) == 0:
+    # Set name from Source Path
+    name = "{0}-{1}".format(os.path.basename(source_path), version)
+    self.output("name: {0}".format(name))
+  else:
+    name = wim_name
+    self.output("name: {0}".format(name))
   # Default destination_path
   if len(volume_name) == 0:
-    volume_name = "{0}-{1}".format(name, version)
+    volume_name = os.path.basename(source_path)[:8]
       
   if len(volume_descripton) == 0:
-    volume_descripton = volume_name
-  destination_name = "{0}.{1}".format(volume_name, extension)
+    volume_descripton = wim_name
+  destination_name = "{0}.{1}".format(name, extension)
   destination_wim = "{0}/{1}".format(RECIPE_CACHE_DIR, destination_name)
   if self.env.get("destination_path"):
     destination_path = self.env.get("destination_path")
     self.output("Using provided destination_path value")
-    destination_wim = "{0}{1}-{2}.{3}".format(destination_path, name, version, extension)
-  # Default to overwrite
-  overwrite = True
+    destination_wim = "{0}{1}.{2}".format(destination_path, destination_name, extension)
+  
   if self.env.get("overwrite"):
     overwrite = self.env.get("overwrite")
+  else:
+    overwrite = True
 
   try:
     matches = glob.glob(source_path, recursive=True)
