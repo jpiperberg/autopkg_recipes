@@ -39,8 +39,9 @@ class CreateWIMProvider(Processor):
                       "be mounted.")
     },
     "destination_path": {
-      "required": True,
-      "description": ("Destination Path for WIM. Should be a folder. ")
+      "required": False,
+      "description": ("Destination Path for WIM. Should be a folder. "),
+      "default": "" # set in main
     },
     "wim_name": {
       "required": False,
@@ -81,7 +82,8 @@ class CreateWIMProvider(Processor):
 
   def validate_wim(self, source_path, target_wim):
     """ Validates created wim file """
-    wim_test = f"{os.getcwd()}\\testmount"
+    recipe_cache_dir = self.env["RECIPE_CACHE_DIR"]
+    wim_test = f"{recipe_cache_dir}/testmount"
     if not os.path.exists(wim_test):
         os.makedirs(wim_test)
 
@@ -94,14 +96,34 @@ class CreateWIMProvider(Processor):
         capture_output=True,
         text=True
     )
+    self.output(f"Ran command {result.args}")
     self.output(f"Expanded {target_wim}: {result.stdout}")
+    # remove pesky .DS_Store files
+    result = subprocess.run(
+      [
+        "find",
+        f"'{wim_test}/'",
+        "-name",
+        ".DS_Store",
+        "-delete"
+      ],
+      capture_output=True,
+      text=True
+    )
+    self.output(f"Ran command {result.args}")
+    if os.path.exists(f"{source_path}.DS_Store"):
+      os.remove(f"{source_path}.DS_Store")
+    if os.path.exists(f"{wim_test}.DS_Store"):
+      os.remove(f"{wim_test}.DS_Store")
     # compare folders
     result = subprocess.run(
       [
         "diff",
-       "-rq",
-       f"{wim_test}",
-       f"{source_path}"
+        "-rq",
+        f"{wim_test}",
+        f"{source_path}",
+        "-x",
+        ".DS_Store"
        ], 
        capture_output=True, text=True
     )
@@ -113,20 +135,68 @@ class CreateWIMProvider(Processor):
           result.stdout,
         ]
       )
-    os.remove(wim_test)
+    else:
+      self.output("Verification successful")
+      
+    # apparently even shutil.rmtree gets mad about too many subfolders 
+    try:
+      subprocess.run(
+        [
+          "rm",
+          "-Rf"
+          f"'{wim_test}'",
+        ],
+        capture_output=True,
+        text=True
+      )
+    except:
+      # do it again I guess
+      subprocess.run(
+        [
+          "rm",
+          "-Rf"
+          f"'{wim_test}'",
+        ],
+        capture_output=True,
+        text=True
+      )
 
-  def createWIM(self, source_path, destination_wim, volume_name, volume_descripton, compression_type, overwrite):
+  def createWIM(self, source_path, destination_path, wim_name, volume_name, volume_descripton, compression_type, overwrite):
     """
     Creates WIM from source_path
     """
-    if os.path.exists(f"{source_path}/.DS_Store"):
-      os.remove(f"{source_path}/.DS_Store")
-
-    destination_path = self.env.get("destination_path")
+    destination_wim = "{0}/{1}.wim".format(destination_path, wim_name)
+    # remove pesky .DS_Store files
+    result = subprocess.run(
+      [
+        "find",
+        f"'{source_path}'",
+        "-name",
+        ".DS_Store",
+        "-type",
+        "f",
+        "-delete"
+      ],
+      capture_output=True,
+      text=True
+    )
+    self.output(result.args)
     if not os.path.exists(destination_path):
       os.makedirs(destination_path)
-    if os.path.exists(f"{destination_path}/.DS_Store"):
-      os.remove(f"{destination_path}/.DS_Store")
+    # remove pesky .DS_Store files
+    result = subprocess.run(
+      [
+        "find",
+        f"'{destination_path}'",
+        "-name",
+        ".DS_Store",
+        "-type",
+        "f",
+        "-delete"
+      ],
+      capture_output=True,
+      text=True
+    )
     if os.path.exists(destination_wim):
       self.output("Destination WIM exists")
       if os.path.isfile(destination_wim) and overwrite:
@@ -151,7 +221,7 @@ class CreateWIMProvider(Processor):
       [
         "wimcapture",
         f"{source_path}",
-        f"{destination_wim}.wim",
+        f"{destination_wim}",
         f"{VOLUME_NAME}",
         f"{volume_descripton}",
         "--check",
@@ -164,7 +234,7 @@ class CreateWIMProvider(Processor):
     result = subprocess.run(
       [
         "wiminfo",
-        f"{destination_wim}.wim",
+        f"{destination_wim}",
       ],
       capture_output=True,
       text=True
@@ -173,13 +243,29 @@ class CreateWIMProvider(Processor):
 
   def main(self):
     source_path = self.env["source_path"]
-    RECIPE_CACHE_DIR = self.env.get("RECIPE_CACHE_DIR")
-    version = self.env.get("version")
+    RECIPE_CACHE_DIR = self.env["RECIPE_CACHE_DIR"]
+    version = self.env["version"]
     extension = "wim"
     volume_name = self.env["volume_name"]
     volume_descripton = self.env["volume_descripton"]
     validate = self.env["validate"]
     wim_name = self.env["wim_name"]
+    destination_path = self.env["destination_path"]
+    
+    # remove pesky .DS_Store files
+    subprocess.run(
+      [
+        "find",
+        f"'{RECIPE_CACHE_DIR}'",
+        "-name",
+        ".DS_Store",
+        "-type",
+        "f",
+        "-delete"
+      ],
+      capture_output=True,
+      text=True
+    )
 
     if not os.path.exists(source_path):
       raise ProcessorError(f"Source path{source_path} does not exist")
@@ -193,8 +279,8 @@ class CreateWIMProvider(Processor):
       capture_output=True,
       text=True
     )
-    if result.stdout.find("not found") < 0:
-      raise ProcessorError(f"wimlib not installed, please run 'brew install wimlib'")
+    if not int(result.stdout.find("wimcapture")) > 0:
+      raise ProcessorError("wimlib not installed: {0}, please run 'brew install wimlib'".format(result))
 
     if len(wim_name) == 0:
       # Set name from Source Path
@@ -209,15 +295,18 @@ class CreateWIMProvider(Processor):
         
     if len(volume_descripton) == 0:
       volume_descripton = wim_name
-    destination_name = "{0}.{1}".format(name, extension)
-    destination_wim = "{0}/{1}".format(RECIPE_CACHE_DIR, destination_name)
-    if self.env.get("destination_path"):
-      destination_path = self.env.get("destination_path")
-      self.output("Using provided destination_path value")
-      destination_wim = "{0}{1}.{2}".format(destination_path, destination_name, extension)
+
+    if len(self.env["destination_path"]) > 0:
+      destination_path = self.env["destination_path"]
+      self.output(f"Using provided destination_path value {destination_path}")
+      destination_wim = "{0}/{1}.{2}".format(destination_path, wim_name, extension)
+    else:
+      destination_path = RECIPE_CACHE_DIR
+      self.output(f"using default destination_path value {destination_path}")
+      destination_wim = "{0}/{1}.{2}".format(destination_path, wim_name, extension)
     
-    if self.env.get("overwrite"):
-      overwrite = self.env.get("overwrite")
+    if self.env["overwrite"]:
+      overwrite = self.env["overwrite"]
     else:
       overwrite = True
 
@@ -247,16 +336,19 @@ class CreateWIMProvider(Processor):
       # Create WIM and set path
       self.createWIM(
         source_path,
-        destination_wim,
+        destination_path,
+        wim_name,
         volume_name,
         volume_descripton,
-        overwrite)
+        self.env["compression_type"],
+        overwrite
+        )
       self.env["wim_path"] = f"{destination_wim}.wim"
     except:
       raise ProcessorError(f"Error creating wim from {source_path} to {destination_wim}.wim")
 
-    if self.env.get["validate"]:
-      self.validate_wim(self,source_path, f"{destination_wim}.wim")
+    if self.env["validate"]:
+      self.validate_wim(source_path, f"{destination_wim}")
 
 if __name__ == '__main__':
     processor = CreateWIMProvider()
