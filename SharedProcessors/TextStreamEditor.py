@@ -36,11 +36,17 @@ class TextStreamEditor(Processor):
     input_variables = {
         "source_string": {
                     "required": True,
-                    "description": "text to apply sed expression to.",
+                    "description": "text to apply expression to.",
         },
         "sed_expression": {
-            "required": True,
-            "description": "Sed expression to apply to source_string ( do not include 'sed')",
+            "required": False,
+            "description": "Sed expression to apply to source_string ( do not include 'sed'). sed will be run first",
+            "default": "",
+        },
+        "tr_expression": {
+            "required": False,
+            "description": "tr expression to apply to source_string ( do not include 'tr') tr will be run after sed expression if present",
+            "default": "",
         },
         "result_output_var_name": {
             "required": False,
@@ -88,12 +94,26 @@ class TextStreamEditor(Processor):
         output_var_name = self.env["result_output_var_name"]
         source_string = self.env["source_string"]
         sed_expression = self.env["sed_expression"]
+        tr_expression = self.env["tr_expression"]
+        edited_string = ""
         # assemble command
-        command = r"echo {0} |  sed '{1}'".format(source_string, sed_expression)
-        self.output("Preparing to execute command: {0}".format(command))
-        edited_string = subprocess.run(command, capture_output=True, shell=True).stdout.decode().strip()
-        self.output("Edited String is: {0}".format(edited_string))
-       
+        if len(sed_expression) > 0:
+            command = r"echo {0} |  sed '{1}'".format(source_string, sed_expression)
+            self.output("Preparing to execute command: {0}".format(command))
+            edited_string = subprocess.run(command, capture_output=True, shell=True).stdout.decode().strip()
+            self.output("Edited String is: {0}".format(edited_string))
+        if len(tr_expression) > 0:
+            if len(edited_string) == 0:
+                command = r"echo {0} |  tr '{1}'".format(source_string, tr_expression)
+                self.output("Preparing to execute command: {0}".format(command))
+                edited_string = subprocess.run(command, capture_output=True, shell=True).stdout.decode().strip()
+                self.output("Edited String is: {0}".format(edited_string))
+            else:
+                command = r"echo {0} |  tr '{1}'".format(edited_string, tr_expression)
+                self.output("Preparing to execute command: {0}".format(command))
+                edited_string = subprocess.run(command, capture_output=True, shell=True).stdout.decode().strip()
+                self.output("Edited String is: {0}".format(edited_string))
+
         self.env[output_var_name] = edited_string
 
 
