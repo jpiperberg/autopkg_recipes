@@ -343,7 +343,7 @@ class CreateWIMProvider(Processor):
         self.env["compression_type"],
         overwrite
         )
-      self.env["wim_path"] = f"{destination_wim}.wim"
+      self.env["wim_path"] = f"{destination_wim}"
     except:
       raise ProcessorError(f"Error creating wim from {source_path} to {destination_wim}.wim")
 
