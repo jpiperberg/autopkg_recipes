@@ -142,7 +142,7 @@ class CreateWIMProvider(Processor):
     try:
       subprocess.run(
         [
-          "rm",
+          "/bin/rm",
           "-Rf"
           f"'{wim_test}'",
         ],
@@ -153,7 +153,7 @@ class CreateWIMProvider(Processor):
       # do it again I guess
       subprocess.run(
         [
-          "rm",
+          "/bin/rm",
           "-Rf"
           f"'{wim_test}'",
         ],
