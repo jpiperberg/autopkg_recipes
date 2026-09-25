@@ -11,7 +11,8 @@ Process:
   Arguments:
     url: 'https://desktop.docker.com/win/main/%ARCH%/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-win-%ARCH%'
     filename: '%NAME%-%ARCH%.exe'
-    user-agent: "%USER_AGENT%"
+    request_headers:
+      user-agent: "%USER_AGENT%"
 - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
   Arguments:
     pathname: '%pathname%'
