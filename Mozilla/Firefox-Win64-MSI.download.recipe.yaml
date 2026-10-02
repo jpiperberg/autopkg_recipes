@@ -1,0 +1,37 @@
+
+Comment: |
+  Downloads the latest Firefox MSI. Pass "" to CHANNEL for release or "-esr" for esr
+  From:
+Identifier: com.github.jpiperberg.download.Firefox-Win64-MSI
+MinimumVersion: "2.3"
+Input:
+  NAME: Firefox
+  COMPANY: Mozilla
+  CHANNEL: "" # pass "-esr" for esr
+  version_predicate: version == "" OR version == "None"
+  ARCH: x64
+  SignerString: | # Processor uses re.escape, so copying and pasting the string that appears after "Subject" should work
+    CN=Mozilla Corporation,OU=Firefox Engineering Operations,O=Mozilla Corporation,L=San Francisco,ST=California,C=US
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      url: 'https://download.mozilla.org/?product=firefox%CHANNEL%-msi-latest-ssl&os=win64&lang=en-US'
+      filename: "%NAME%64%CHANNEL%.msi"
+  - Processor: com.github.hansen-m.SharedProcessors/MSIInfoVersionProvider
+    Arguments: 
+      msi_path: '%pathname%'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: "%version_predicate%"
+  - Processor: EndOfCheckPhase
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: "%version_predicate%"
+  - Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+    Arguments:
+      pathname: "%pathname%"
+      signer_string: '%SignerString%'
+  - Processor: StopProcessingIf
+    Arguments:
+      predicate: verified == "False" OR verified == "None"
+ 

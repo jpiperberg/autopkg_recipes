@@ -1,7 +1,5 @@
 Comment: |
   Downloads the latest Thunderbird MSI.  pass "" to CHANNEL for release or "esr" for esr
-  From:
-  https://docs.paloaltonetworks.com/prisma-access-browser/deployment/prisma-access-browser-update-mechanics#windows-deployment
 Identifier: com.github.jpiperberg.download.Thunderbird-Win64-MSI
 MinimumVersion: "2.3"
 Input:
