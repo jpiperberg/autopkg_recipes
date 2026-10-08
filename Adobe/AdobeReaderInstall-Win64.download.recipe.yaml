@@ -1,0 +1,37 @@
+Comment: |
+    Downloads Adobe Reader install
+    https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC
+Description: Downloads the Install package for Adobe Reader
+Identifier: com.github.jpiperberg.download.AdobeReaderInstall-Win
+MinimumVersion: '2.3'
+Input:
+    NAME: Adobe Reader
+    regex: '(?P<version_url>continuous[a-z0-9\.#\/]+)(?:\"><.*\">)(?P<version>\d{2}\.\d{3}\.\d{4,}) (?:Planned update|Out of cycle update)'
+    BASE_RELEASE_URL: https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC
+    BASE_DOWNLOAD_URL: https://ardownload3.adobe.com/pub/adobe/acrobat/win/AcrobatDC/
+    signer_string: "CN=Adobe Inc.,OU=Acrobat DC,O=Adobe Inc.,L=San Jose,ST=ca,C=US,serialNumber=2748129,businessCategory=Private Organization,jurisdictionST=Delaware,jurisdictionC=US"
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    url: '%BASE_RELEASE_URL%'
+    re_pattern: "%regex%"
+    result_output_var_name: match
+- Processor: com.github.jpiperberg.SharedProcessors/TextStreamEditor
+  Arguments:
+    source_string: "%version%"
+    sed_expression: 's/\.//g'
+    result_output_var_name: combined_version
+- Processor: URLDownloader
+  Arguments:
+    url: '%BASE_DOWNLOAD_URL%%combined_version%/AcroRdrDCx64%combined_version%_en_US.exe'
+    prefetch_filename: True
+- Processor: com.github.jpiperberg.SharedProcessors/OsslsigncodeVerifier
+  Arguments:
+    pathname: '%pathname%'
+    signer_string: '%signer_string%'
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: verified == "False" OR verified == "None"
+- Processor: StopProcessingIf
+  Arguments:
+    predicate: verified == "False" OR verified == "None"
