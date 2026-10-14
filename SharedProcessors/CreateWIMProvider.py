@@ -25,6 +25,7 @@ import os
 import glob
 from autopkglib import ProcessorError, Processor
 import subprocess
+import shutil
 
 
 __all__ = ["CreateWIMProvider"]
@@ -86,7 +87,10 @@ class CreateWIMProvider(Processor):
     wim_test = f"{recipe_cache_dir}/testmount"
     if not os.path.exists(wim_test):
         os.makedirs(wim_test)
-
+    else:
+      shutil.rmtree(wim_test)
+      os.makedirs(wim_test)
+      
     result = subprocess.run(
       [
         "wimapply",
